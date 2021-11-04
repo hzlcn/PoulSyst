@@ -1,0 +1,9 @@
+##ignore file ##
+/App/MDK-ARM/
+/App/Drivers/
+/App/.mxproject
+/App/PoulSyst.ioc
+/Boot/MDK-ARM/
+/Boot/Drivers/
+/Boot/.mxproject
+/Boot/Boot.ioc
