@@ -49,7 +49,7 @@ void Main_Init(void)
 {
 	uint8_t i = 0;
 	
-	printf( "\r\n###### ====== Poultry System v1.1.10 ======= ######\r\n" );
+	printf( "\r\n###### ====== Poultry System v1.2.0 ======= ######\r\n" );
 	
 	delay_init(180);
 	HAL_TIM_Base_Start_IT(&htim2);
