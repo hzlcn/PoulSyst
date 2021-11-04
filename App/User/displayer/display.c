@@ -32,6 +32,17 @@
 
 /* Private variables ---------------------------------------------------------*/
 
+/* Private macro -------------------------------------------------------------*/
+
+#define OPTION_NUMBER                    8
+
+/**
+  * 显示网络图标类型
+  */
+#define DISPLAY_ICON_NWK_NONE            0x0000
+#define DISPLAY_ICON_NWK_NET             0x0001
+#define DISPLAY_ICON_NWK_SIM             0x0002
+
 /**
   * 选择界面的选项参数 ( 页数 和 禽类索引 )
   */

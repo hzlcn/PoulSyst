@@ -27,8 +27,65 @@
 #include "lcd.h"
 #include "poultry.h"
 #include "stmflash.h"
+#include "dataStruct.h"
 
 /* Private variables ---------------------------------------------------------*/
+/**
+  * 店主信息库
+  */
+static MercBase_t g_mercBase = { 0 };
+
+/**
+  * 食品信息库
+  */
+static PoulBase_t g_poulCurBase = { 0 };
+
+/**
+  * 添加信息库
+  */
+static PoulBase_t g_poulAddBase = { 0 };
+
+DataStruct_t g_allData = {
+	.temp = {
+		.user = {
+			.merc = {
+				.perm = USER_PERM_NULL,
+				.code = { 0 },
+			},
+			.cust = {
+				.perm = USER_PERM_NULL,
+				.code = { 0 },
+				.name = { 0 },
+			},
+			.recv = {
+				.isReady = false, 
+				.code = { 0 },
+			},
+			.mercBase = &g_mercBase,
+		},
+		.poul =  {
+			.pCurKind = &g_poulCurBase.kinds[0],
+			.code = {
+				.isReady = false, 
+				.qrcode = { 0 },
+			},
+			.list = { 
+				.type = POUL_LISTTYPE_NONE,
+				.group = POUL_LISTGROUPTYPE_CHICK,
+				.sum = 0,
+				.pKinds = { 0 },
+			},
+			.base = {
+				[0] = &g_poulCurBase,
+				[1] = &g_poulAddBase,
+			},
+		},
+		.gps = { 0 },
+	},
+};
+SavePara_t *g_savPara = &g_allData.save;
+TempPara_t *g_tmpPara = &g_allData.temp;
+
 /**
   * 定时计数
   */
@@ -100,8 +157,6 @@ void Main_Init(void)
 void Main_Process(void)
 {
 	NwkStatus_t nwkStatus = Network_GetStatus();
-	g_appTick = HAL_GetTick();
-	
 	
 	// 处理二维码数据
 	Poul_Process();
@@ -130,6 +185,8 @@ void Main_Process(void)
 	// 运行流程: 设备登录->用户登录->客户登录->商品购买
 	Route_Process();
 
+	g_appTick = HAL_GetTick();
+	
 	// 50ms处理
 	if ((g_app50msTime.count > 0) && (g_appTick - g_app50msTime.start >= g_app50msTime.count)) {
 		g_app50msTime.start = g_appTick;

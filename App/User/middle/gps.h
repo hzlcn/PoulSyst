@@ -2,14 +2,8 @@
 #define __GPS_H__
 
 #include "common.h"
+#include "dataStruct.h"
 
-/**
-  * GPS卫星信息结构体
-  */
-typedef struct {
-	char svNum[2];          // 可见卫星数
-	char svSnr[2];          // 信躁比
-}GPS_SVParam_t;
 
 /**
   * @brief  开关GPS功能

@@ -37,47 +37,20 @@ static PoulBase_t g_poulDefaultBase = {
 };
 
 /**
-  * 食品信息库
-  */
-static PoulBase_t g_poulCurBase = { 0 };
-
-/**
-  * 添加信息库
-  */
-static PoulBase_t g_poulAddBase = { 0 };
-
-/**
   * 食品种类信息
   */
-static PoulInfo_t g_poulInfo = {	
-	.pCurKind = &g_poulCurBase.kinds[0],
-	.code = {
-		.isReady = false, 
-		.qrcode = { 0 },
-	},
-	.list = { 
-		.type = POUL_LISTTYPE_NONE,
-		.group = POUL_LISTGROUPTYPE_CHICK,
-		.sum = 0,
-		.pKinds = { 0 },
-	},
-	.base = {
-		[0] = &g_poulCurBase,
-		[1] = &g_poulAddBase,
-	},
-};
+static PoulInfo_t *g_poulInfo = &g_allData.temp.poul;
 
 /**
   * 接收缓冲区
   */
 static uint8_t g_poulRxBuf[UART2_BUFFSIZE];
 
+/* Private function prototypes -----------------------------------------------*/
 /**
   * @brief  检查接收数据
   */
 static bool Poul_RxCheck(u8 *pBuf, u16 len);
-
-/* Private function prototypes -----------------------------------------------*/
 
 /**
   * @brief  获取食品类型信息参数地址指针
@@ -86,7 +59,7 @@ static bool Poul_RxCheck(u8 *pBuf, u16 len);
   */
 PoulInfo_t *Poul_GetInfo(void)
 {
-	return &g_poulInfo;
+	return g_poulInfo;
 }
 
 /**
@@ -107,14 +80,13 @@ void Poul_InitModule(void)
   */
 void Poul_Process(void)
 {	
-	u16 i;
 	u16 rxLen = Uart_GetData(&huart2, g_poulRxBuf);
 	if (rxLen > 0) {
-		if ((g_poulInfo.code.isReady == false) && (rxLen > POUL_CODE_MIN_SIZE)) {
+		if ((g_poulInfo->code.isReady == false) && (rxLen > POUL_CODE_MIN_SIZE)) {
 			if (Poul_RxCheck(g_poulRxBuf + POUL_CODE_OFFSET, MIN((rxLen - POUL_CODE_OFFSET) , N_POULTRY_QRCODE_BUFFER_SIZE)) == true) {
-				g_poulInfo.code.isReady = true;
-				memset(g_poulInfo.code.qrcode, '-', N_POULTRY_QRCODE_BUFFER_SIZE);
-				memcpy(g_poulInfo.code.qrcode, g_poulRxBuf + POUL_CODE_OFFSET, MIN((rxLen - POUL_CODE_OFFSET) , N_POULTRY_QRCODE_BUFFER_SIZE));
+				g_poulInfo->code.isReady = true;
+				memset(g_poulInfo->code.qrcode, '-', N_POULTRY_QRCODE_BUFFER_SIZE);
+				memcpy(g_poulInfo->code.qrcode, g_poulRxBuf + POUL_CODE_OFFSET, MIN((rxLen - POUL_CODE_OFFSET) , N_POULTRY_QRCODE_BUFFER_SIZE));
 
 				Beep_Run(50);
 			}
@@ -132,8 +104,8 @@ void Poul_Process(void)
   */
 void Poul_ClrCode(void)
 {
-//	memset(g_poulInfo.code.qrcode, '-', N_POULTRY_QRCODE_BUFFER_SIZE);
-	g_poulInfo.code.isReady = false;
+//	memset(g_poulInfo->code.qrcode, '-', N_POULTRY_QRCODE_BUFFER_SIZE);
+	g_poulInfo->code.isReady = false;
 }
 
 /**
@@ -147,23 +119,23 @@ void Poul_SetList(PoulListGroup_t group, PoulListType_t type)
 	PoulBase_t *base = NULL;
 	
 	// 清空列表
-	memset(&g_poulInfo.list, 0, sizeof(PoulList_t));
+	memset(&g_poulInfo->list, 0, sizeof(PoulList_t));
 
-	g_poulInfo.list.group = group;
-	g_poulInfo.list.type = type;
+	g_poulInfo->list.group = group;
+	g_poulInfo->list.type = type;
 	
 	if (type == POUL_LISTTYPE_CUR) {
-		base = &g_poulCurBase;
+		base = g_poulInfo->base[0];
 	} else if (type == POUL_LISTTYPE_ADD) {
-		base = &g_poulAddBase;
+		base = g_poulInfo->base[1];
 	} else {
 		return ;
 	}
 	
 	for (i = 0; i < base->sum; i++) {
-		if (base->kinds[i].kindNum[1] == g_poulInfo.list.group) {
+		if (base->kinds[i].kindNum[1] == g_poulInfo->list.group) {
 			// 添加到指针列表
-			g_poulInfo.list.pKinds[g_poulInfo.list.sum++] = &base->kinds[i];
+			g_poulInfo->list.pKinds[g_poulInfo->list.sum++] = &base->kinds[i];
 		}
 	}
 }
@@ -175,7 +147,7 @@ void Poul_SetList(PoulListGroup_t group, PoulListType_t type)
   */
 void Poul_SetKind(PoulKind_t *data)
 {
-	g_poulInfo.pCurKind = data;
+	g_poulInfo->pCurKind = data;
 }
 
 /**
@@ -188,7 +160,7 @@ void Poul_AddKind(PoulKind_t *kind)
 	uint8_t i = 0;
 	PoulBase_t *base = NULL;     // 信息库指针
 
-	base = &g_poulCurBase;
+	base = g_poulInfo->base[0];
 	
 	// 检查信息是否已经存在
 	for (i = 0; i < base->sum; i++) {
@@ -211,7 +183,7 @@ void Poul_AddKind(PoulKind_t *kind)
   */
 void Poul_DelKind(PoulKind_t *data)
 {
-	PoulBase_t *base = &g_poulCurBase;     // 信息库指针
+	PoulBase_t *base = g_poulInfo->base[0];     // 信息库指针
 	uint8_t index = (data - &base->kinds[0]);
 
 	if (data == NULL) {
@@ -224,7 +196,7 @@ void Poul_DelKind(PoulKind_t *data)
 	memset(&base->kinds[base->sum], 0, sizeof(PoulKind_t));
 	
 	// 更新信息列表
-	Poul_SetList(g_poulInfo.list.group, g_poulInfo.list.type);
+	Poul_SetList(g_poulInfo->list.group, g_poulInfo->list.type);
 }
 
 /**
@@ -234,7 +206,7 @@ void Poul_DelKind(PoulKind_t *data)
   */
 void Poul_DefBase(void)
 {
-	memcpy(&g_poulCurBase, &g_poulDefaultBase, sizeof(PoulBase_t));
+	memcpy(g_poulInfo->base[0], &g_poulDefaultBase, sizeof(PoulBase_t));
 }
 
 /**
@@ -254,7 +226,7 @@ static bool Poul_RxCheck(u8 *pBuf, u16 len)
 	
 	// 2.检查数据是否重复
 	for (i = 0; i < len; i++) {
-		if (pBuf[i] != g_poulInfo.code.qrcode[i]) {
+		if (pBuf[i] != g_poulInfo->code.qrcode[i]) {
 			return true;
 		}
 	}

@@ -25,29 +25,9 @@ static MercBase_t g_mercDefaultBase = {
 };
 
 /**
-  * 店主信息库
-  */
-static MercBase_t g_mercBase = { 0 };
-
-/**
   * 用户信息缓冲区
   */
-static UserInfo_t g_userInfo = {
-	.merc = {
-		.perm = USER_PERM_NULL,
-		.code = { 0 },
-	},
-	.cust = {
-		.perm = USER_PERM_NULL,
-		.code = { 0 },
-		.name = { 0 },
-	},
-	.recv = {
-		.isReady = false, 
-		.code = { 0 },
-	},
-	.mercBase = &g_mercBase,
-};
+static UserInfo_t *g_userInfo = &g_allData.temp.user;
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -58,7 +38,7 @@ static UserInfo_t g_userInfo = {
   */
 UserInfo_t *User_GetInfo(void)
 {
-	return &g_userInfo;
+	return g_userInfo;
 }
 
 /**
@@ -89,9 +69,9 @@ void User_Process(void)
 			}
 		}
 		
-		if ((g_userInfo.recv.isReady == false) && (rxLen >= USERQRCODE_MIN_SIZE) && (dataError == 0)) {
-			g_userInfo.recv.isReady = true;
-			memcpy(g_userInfo.recv.code, userRxTmp, rxLen);
+		if ((g_userInfo->recv.isReady == false) && (rxLen >= USERQRCODE_MIN_SIZE) && (dataError == 0)) {
+			g_userInfo->recv.isReady = true;
+			memcpy(g_userInfo->recv.code, userRxTmp, rxLen);
 		}
 		
 		// 清空接收缓冲区
@@ -107,11 +87,11 @@ void User_Process(void)
 void User_SetCode(UserPerm_t perm)
 {
 	if ((perm == USER_PERM_MERCHANT) || (perm == USER_PERM_ADMIN) || (perm == USER_PERM_MAINTAIN)) {
-		g_userInfo.merc.perm = perm;
-		memcpy(g_userInfo.merc.code, g_userInfo.recv.code, USER_CODE_SIZE);
+		g_userInfo->merc.perm = perm;
+		memcpy(g_userInfo->merc.code, g_userInfo->recv.code, USER_CODE_SIZE);
 	} else if (perm == USER_PERM_CUSTOMER) {
-		g_userInfo.cust.perm = USER_PERM_CUSTOMER;
-		memcpy(g_userInfo.cust.code, g_userInfo.recv.code, USER_CODE_SIZE);
+		g_userInfo->cust.perm = USER_PERM_CUSTOMER;
+		memcpy(g_userInfo->cust.code, g_userInfo->recv.code, USER_CODE_SIZE);
 	}
 }
 
@@ -122,8 +102,8 @@ void User_SetCode(UserPerm_t perm)
   */
 void User_ClearRecv(void)
 {
-	memset(g_userInfo.recv.code, 0, USERQRCODE_MIN_SIZE);
-	g_userInfo.recv.isReady = false;
+	memset(g_userInfo->recv.code, 0, USERQRCODE_MIN_SIZE);
+	g_userInfo->recv.isReady = false;
 }
 
 /**
@@ -152,8 +132,8 @@ void User_ResetModule(void)
   */
 void User_InitMerc(void)
 {   // 复位店主信息缓冲区
-	g_userInfo.merc.perm = USER_PERM_NULL;
-	memset(g_userInfo.merc.code, 0, 20);
+	g_userInfo->merc.perm = USER_PERM_NULL;
+	memset(g_userInfo->merc.code, 0, 20);
 }
 
 /**
@@ -165,9 +145,9 @@ void User_InitMerc(void)
 bool User_CheckLocal(void)
 {
 	u8 i = 0;
-	for (i = 0; i < g_userInfo.mercBase->Sum; i++) {
-		if (memcmp(&g_userInfo.mercBase->List.Info[i].code, g_userInfo.recv.code, USER_CODE_SIZE) == 0) {
-			memcpy(&g_userInfo.merc, &g_userInfo.mercBase->List.Info[i], sizeof(Merchant_t));
+	for (i = 0; i < g_userInfo->mercBase->Sum; i++) {
+		if (memcmp(&g_userInfo->mercBase->List.Info[i].code, g_userInfo->recv.code, USER_CODE_SIZE) == 0) {
+			memcpy(&g_userInfo->merc, &g_userInfo->mercBase->List.Info[i], sizeof(Merchant_t));
 			return true;
 		}
 	}
@@ -182,7 +162,7 @@ bool User_CheckLocal(void)
   */
 void User_InitMercBase(void)
 {
-	memcpy(g_userInfo.mercBase, &g_mercDefaultBase, sizeof(MercBase_t));
+	memcpy(g_userInfo->mercBase, &g_mercDefaultBase, sizeof(MercBase_t));
 }
 
 /**
@@ -192,9 +172,9 @@ void User_InitMercBase(void)
   */
 void User_InitCust(void)
 {   // 复位客户信息缓冲区
-	memset(g_userInfo.cust.code, 0, USER_CODE_SIZE);
-	memset(g_userInfo.cust.name, 0, 20);
-	g_userInfo.cust.perm = USER_PERM_NULL;
+	memset(g_userInfo->cust.code, 0, USER_CODE_SIZE);
+	memset(g_userInfo->cust.name, 0, 20);
+	g_userInfo->cust.perm = USER_PERM_NULL;
 }
 
 /**
@@ -204,7 +184,7 @@ void User_InitCust(void)
   */
 void User_SetCust(u8 *name)
 {
-	memcpy(g_userInfo.cust.name, name, 20);
+	memcpy(g_userInfo->cust.name, name, 20);
 }
 
 /**
@@ -214,9 +194,9 @@ void User_SetCust(u8 *name)
   */
 void User_SetCustAdmin(void)
 {
-	if (g_userInfo.merc.perm != USER_PERM_NULL) {
-		g_userInfo.cust.perm = USER_PERM_CUSTOMER;
-		memcpy(g_userInfo.cust.code, g_userInfo.merc.code, USER_CODE_SIZE);
+	if (g_userInfo->merc.perm != USER_PERM_NULL) {
+		g_userInfo->cust.perm = USER_PERM_CUSTOMER;
+		memcpy(g_userInfo->cust.code, g_userInfo->merc.code, USER_CODE_SIZE);
 	}
 }
 

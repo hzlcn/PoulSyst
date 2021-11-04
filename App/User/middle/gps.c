@@ -105,7 +105,7 @@ GPS_LLParam_t g_GPS_LLInfo = {
 /**
   * GpsÎÀÐÇÐÅÏ¢
   */
-GPS_SVParam_t g_GPS_SVInfo;
+GPS_SVParam_t *g_GPS_SVInfo = &g_allData.temp.gps;
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -184,7 +184,7 @@ void GPS_Process(void)
   */
 GPS_SVParam_t *GPS_GetSVDate(void)
 {
-	return &g_GPS_SVInfo;
+	return g_GPS_SVInfo;
 }
 
 /**
@@ -194,8 +194,8 @@ GPS_SVParam_t *GPS_GetSVDate(void)
   */
 bool GPS_SVIsReady(void)
 {
-	if (((g_GPS_SVInfo.svNum[0] != 0) || (g_GPS_SVInfo.svNum[1] != 0)) && 
-		((g_GPS_SVInfo.svSnr[0] != 0) || (g_GPS_SVInfo.svSnr[1] != 0)))
+	if (((g_GPS_SVInfo->svNum[0] != 0) || (g_GPS_SVInfo->svNum[1] != 0)) && 
+		((g_GPS_SVInfo->svSnr[0] != 0) || (g_GPS_SVInfo->svSnr[1] != 0)))
 	{
 		return true;
 	}
@@ -271,10 +271,10 @@ static void GPS_ParseSV(void)
 		((g_aftSplitBuf[7][0] != 0) || (g_aftSplitBuf[7][1] != 0)))
 	{
 		Error_Del(ERROR_GPS_NO_SVDATA);
-		g_GPS_SVInfo.svNum[0] = g_aftSplitBuf[3][0];
-		g_GPS_SVInfo.svNum[1] = g_aftSplitBuf[3][1];
-		g_GPS_SVInfo.svSnr[0] = g_aftSplitBuf[7][0];
-		g_GPS_SVInfo.svSnr[1] = g_aftSplitBuf[7][1];
+		g_GPS_SVInfo->svNum[0] = g_aftSplitBuf[3][0];
+		g_GPS_SVInfo->svNum[1] = g_aftSplitBuf[3][1];
+		g_GPS_SVInfo->svSnr[0] = g_aftSplitBuf[7][0];
+		g_GPS_SVInfo->svSnr[1] = g_aftSplitBuf[7][1];
 	}
 
 	return ;
@@ -331,9 +331,9 @@ static void GPS_ParseLocation(void)
   */
 static void GPS_ShowLocation(void)
 {
-	if ((g_GPS_SVInfo.svNum[1] != 0) || (g_GPS_SVInfo.svSnr[1] != 0)) {
-		printf("Satellites: %c%c, %c%cdB\r\n", g_GPS_SVInfo.svNum[0], g_GPS_SVInfo.svNum[1], 
-		    g_GPS_SVInfo.svSnr[0], g_GPS_SVInfo.svSnr[1]);
+	if ((g_GPS_SVInfo->svNum[1] != 0) || (g_GPS_SVInfo->svSnr[1] != 0)) {
+		printf("Satellites: %c%c, %c%cdB\r\n", g_GPS_SVInfo->svNum[0], g_GPS_SVInfo->svNum[1], 
+		    g_GPS_SVInfo->svSnr[0], g_GPS_SVInfo->svSnr[1]);
 	}
 	
 	if (((g_GPS_LLInfo.NS == 'N') || (g_GPS_LLInfo.NS == 'S')) && 
