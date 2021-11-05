@@ -2,7 +2,7 @@
 #define __GPS_H__
 
 #include "common.h"
-#include "dataStruct.h"
+#include "datastruct.h"
 
 
 /**

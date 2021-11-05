@@ -10,7 +10,7 @@
 /* Private includes ----------------------------------------------------------*/
 
 
-#include "ethernet.h"
+#include "w5500_ex.h"
 #include "w5500.h"
 #include "dhcp.h"
 #include "socket.h"
@@ -77,8 +77,8 @@ DhcpConfig_t ConfigDhcpMsg = {
   * TCP信息参数
   */
 Net_TcpServer_t g_net_Server = {
-    .serverIP = { 8, 129, 53, 188 },   //{ 8, 129, 53, 188 }, 
-    .serverPort = 0x07E5,                 //0x07E5,
+    .serverIP = { 8, 129, 53, 188 },   //{ 8, 129, 53, 188 },  { 192, 168, 2, 92 }
+    .serverPort = 0x07E5,	// 0x07E6,	//0x1DB0, // 0x07E5
     .clientPort = 0x1388, 
     .status = false
 };

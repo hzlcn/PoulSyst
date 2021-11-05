@@ -196,8 +196,8 @@ void SystemClock_Config(void)
 #include "communicate.h"
 #include "route.h"
 #include "usermsg.h"
-#include "ethernet.h"
-#include "sim.h"
+#include "w5500_ex.h"
+#include "sim7600.h"
 /* USER CODE END 4 */
 
  /**

@@ -2,7 +2,7 @@
 #include "w25qxx.h"
 #include "display.h"
 #include "drivers.h"
-#include "ethernet.h"
+#include "w5500_ex.h"
 #include "usermsg.h"
 #include "lcd.h"
 #include "param.h"

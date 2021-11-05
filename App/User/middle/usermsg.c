@@ -1,13 +1,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usermsg.h"
 
-/* Private macro -------------------------------------------------------------*/
-
-/**
-  * 用户二维码大小
-  */
-#define     USERQRCODE_MIN_SIZE     20
-
 /* Private variables ---------------------------------------------------------*/
 
 /**
@@ -58,25 +51,32 @@ void User_InitModule(void)
   */
 void User_Process(void)
 {
-	u8 i, dataError = 0, userRxTmp[UART5_BUFFSIZE] = { 0 };
+	u8 i, userRxTmp[UART5_BUFFSIZE] = { 0 };
 	u16 rxLen = Uart_GetData(&huart5, userRxTmp);
-	if (rxLen > 0) {
-		// 检查数据错误
-		for (i = 0; i < rxLen; i++) {
-			if (userRxTmp[i] == 0x00) {
-				dataError = 1;
-				break;
-			}
-		}
-		
-		if ((g_userInfo->recv.isReady == false) && (rxLen >= USERQRCODE_MIN_SIZE) && (dataError == 0)) {
-			g_userInfo->recv.isReady = true;
-			memcpy(g_userInfo->recv.code, userRxTmp, rxLen);
-		}
-		
-		// 清空接收缓冲区
-		memset(userRxTmp, 0, UART5_BUFFSIZE);
+	if (rxLen == 0) {
+		return;
 	}
+	
+	// 检查数据内容
+	for (i = 0; i < rxLen; i++) {
+		if (userRxTmp[i] == 0x00) {
+			return;
+		}
+	}
+	
+	// 检查数据长度
+	if (rxLen < USER_CODE_SIZE) {
+		return;
+	}
+	
+	// 检查缓冲区是否空闲
+	if (g_userInfo->recv.isReady == true) {
+		return;
+	}
+	
+	// 设置完成接收数据标志
+	g_userInfo->recv.isReady = true;
+	memcpy(g_userInfo->recv.code, userRxTmp, rxLen);
 }
 
 /**
@@ -89,8 +89,9 @@ void User_SetCode(UserPerm_t perm)
 	if ((perm == USER_PERM_MERCHANT) || (perm == USER_PERM_ADMIN) || (perm == USER_PERM_MAINTAIN)) {
 		g_userInfo->merc.perm = perm;
 		memcpy(g_userInfo->merc.code, g_userInfo->recv.code, USER_CODE_SIZE);
+		
 	} else if (perm == USER_PERM_CUSTOMER) {
-		g_userInfo->cust.perm = USER_PERM_CUSTOMER;
+		g_userInfo->cust.perm = perm;
 		memcpy(g_userInfo->cust.code, g_userInfo->recv.code, USER_CODE_SIZE);
 	}
 }
@@ -102,7 +103,7 @@ void User_SetCode(UserPerm_t perm)
   */
 void User_ClearRecv(void)
 {
-	memset(g_userInfo->recv.code, 0, USERQRCODE_MIN_SIZE);
+	memset(g_userInfo->recv.code, 0, USER_CODE_SIZE);
 	g_userInfo->recv.isReady = false;
 }
 
@@ -145,9 +146,13 @@ void User_InitMerc(void)
 bool User_CheckLocal(void)
 {
 	u8 i = 0;
+	
+	// 逐个检索用户
 	for (i = 0; i < g_userInfo->mercBase->Sum; i++) {
 		if (memcmp(&g_userInfo->mercBase->List.Info[i].code, g_userInfo->recv.code, USER_CODE_SIZE) == 0) {
+			// 检查成功
 			memcpy(&g_userInfo->merc, &g_userInfo->mercBase->List.Info[i], sizeof(Merchant_t));
+			g_userInfo->merc.perm += 1;
 			return true;
 		}
 	}
@@ -163,18 +168,6 @@ bool User_CheckLocal(void)
 void User_InitMercBase(void)
 {
 	memcpy(g_userInfo->mercBase, &g_mercDefaultBase, sizeof(MercBase_t));
-}
-
-/**
-  * @brief  初始化客户信息
-  * @param  
-  * @retval 
-  */
-void User_InitCust(void)
-{   // 复位客户信息缓冲区
-	memset(g_userInfo->cust.code, 0, USER_CODE_SIZE);
-	memset(g_userInfo->cust.name, 0, 20);
-	g_userInfo->cust.perm = USER_PERM_NULL;
 }
 
 /**

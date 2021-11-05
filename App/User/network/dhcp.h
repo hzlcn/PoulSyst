@@ -3,7 +3,7 @@
 #include "main.h"
 #include "apps.h"
 #include "Types.h"
-#include "ethernet.h"
+#include "w5500_ex.h"
 
 #define EXTERN_DHCP_MAC    ConfigDhcpMsg.mac
 #define EXTERN_DHCP_SN     ConfigDhcpMsg.sub

@@ -10,6 +10,7 @@
 #include "store.h"
 #include "usermsg.h"
 #include "upgrade.h"
+#include "dataStruct.h"
 
 /* Private define ------------------------------------------------------------*/
 
@@ -389,28 +390,22 @@ void CMNC_04_Solve(u8 *pBuf, u16 len)
 	u32 firmSize = ((pBuf[3] << 24) | (pBuf[4] << 16) | (pBuf[5] << 8) | pBuf[6]);
 	if (fragSum == (firmSize / UPGRADE_FRAG_SIZE) + (firmSize & (UPGRADE_FRAG_SIZE - 1)) ? 1 : 0) {
 		Upg_Start(pBuf[0], firmSize, (pBuf[7] << 8) | pBuf[8]);
-		Route_SetUpdate();
+		g_tmpPara->route.updateSoft = true;
 	}
 }
 
 void CMNC_05_Solve(u8 *pBuf, u16 len)
-{
-	RouteInfo_t *routeInfo = Route_GetInfo();
-	
+{	
 	if (pBuf[0] == 0x00) {	// 空用户
-		
+		User_SetCode(USER_PERM_NULL);
 	} else if (pBuf[0] == 0x01) {	// 普通店主
 		User_SetCode(USER_PERM_MERCHANT);
-		Route_SetLogin();
 	} else if (pBuf[0] == 0x02) {	// 管理员
 		User_SetCode(USER_PERM_ADMIN);
-		Route_SetLogin();
 	} else if (pBuf[0] == 0x03) {	// 维护员
 		User_SetCode(USER_PERM_MAINTAIN);
-		Route_SetLogin();
 	} else if (pBuf[0] == 0x04) {	// 普通客户
 		User_SetCode(USER_PERM_CUSTOMER);
-		Route_SetLogin();
 		User_SetCust(pBuf + 1);
 	}
 	

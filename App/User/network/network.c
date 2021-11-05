@@ -1,7 +1,7 @@
 /* Private includes ----------------------------------------------------------*/
 #include "network.h"
-#include "ethernet.h"
-#include "sim.h"
+#include "w5500_ex.h"
+#include "sim7600.h"
 #include "drivers.h"
 
 /* Private define ------------------------------------------------------------*/

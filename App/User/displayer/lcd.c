@@ -1,6 +1,7 @@
 /* Private includes ----------------------------------------------------------*/
 #include "lcd.h"
 #include "drivers.h"
+#include "dataStruct.h"
 
 /**************************************************************************
 *@写字指令 5A A5 0D 82 1000 2829 BAC3 B1B3 B1B4 B1B5
@@ -65,7 +66,7 @@ uint16_t g_LCD_Button = 0;
 /**
   * 页码
   */
-static LCD_Page_t g_LCD_Page = LCD_PAGE_0;
+static LCD_Page_t *g_LCD_Page = &g_allData.temp.display.page;
 
 /**
   * 写入应答 - 固定数据
@@ -206,7 +207,7 @@ void LCD_SwitchPage(LCD_Page_t page)
 	PrintHexBuffer(g_LCD_TxBuf, 10);
 #endif
 
-	g_LCD_Page = page;
+	*g_LCD_Page = page;
 }
 
 /**
@@ -216,7 +217,7 @@ void LCD_SwitchPage(LCD_Page_t page)
   */
 LCD_Page_t LCD_GetPage(void)
 {
-	return g_LCD_Page;
+	return *g_LCD_Page;
 }
 
 /**

@@ -6,7 +6,7 @@
   * -----------------------------------------------------------------
  */
 #include "drivers.h"
-#include "ethernet.h"
+#include "w5500_ex.h"
 #include "w5500.h"
 #include "socket.h"
 

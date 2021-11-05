@@ -3,7 +3,7 @@
 
 #include "common.h"
 #include "serial.h"
-#include "dataStruct.h"
+#include "datastruct.h"
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -29,28 +29,28 @@ PoulInfo_t *Poul_GetInfo(void);
 void        Poul_ClrCode(void);
 
 /**
-  * @brief  更新食品种类指针列表
-  */
-void        Poul_SetList(PoulListGroup_t group, PoulListType_t type);
-
-/**
   * @brief  设置当前食品种类
   */
 void        Poul_SetKind(PoulKind_t *kind);
 
 /**
-  * @brief  添加单条食品信息到内部禽类库
-  */
-void        Poul_AddKind(PoulKind_t *kind);
-
-/**
-  * @brief  通过索引从内部禽类库中删除单条食品信息
-  */
-void        Poul_DelKind(PoulKind_t *kind);
-
-/**
   * @brief  设置食品信息库为初始值
   */
 void        Poul_DefBase(void);
+
+///**
+//  * @brief  更新食品种类指针列表
+//  */
+//void        Poul_SetList(PoulListGroup_t group, PoulListType_t type);
+
+///**
+//  * @brief  添加单条食品信息到内部禽类库
+//  */
+//void        Poul_AddKind(PoulKind_t *kind);
+
+///**
+//  * @brief  通过索引从内部禽类库中删除单条食品信息
+//  */
+//void        Poul_DelKind(PoulKind_t *kind);
 
 #endif /* __PRODUCT_H__ */

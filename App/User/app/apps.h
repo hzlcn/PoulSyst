@@ -8,7 +8,7 @@
 #include "modbus.h"
 #include "communicate.h"
 #include "display.h"
-#include "ethernet.h"
+#include "w5500_ex.h"
 #include "gps.h"
 #include "store.h"
 

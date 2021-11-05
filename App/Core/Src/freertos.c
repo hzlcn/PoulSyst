@@ -26,9 +26,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "sim.h"
+#include "sim7600.h"
 #include "apps.h"
-#include "ethernet.h"
+#include "w5500_ex.h"
 #include "drivers.h"
 
 #include "debug.h"

@@ -3,7 +3,7 @@
 
 #include "common.h"
 #include "serial.h"
-#include "dataStruct.h"
+#include "datastruct.h"
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -51,11 +51,6 @@ bool        User_CheckLocal(void);
   * @brief  设置用户信息库为初始值
   */
 void        User_InitMercBase(void);
-
-/**
-  * @brief  初始化客户信息
-  */
-void        User_InitCust(void);
 
 /**
   * @brief  设置客户名称

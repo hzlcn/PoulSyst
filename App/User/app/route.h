@@ -18,12 +18,6 @@ typedef enum {
 	ROUTE_ADMIN_MODE,
 }RouteStatus_t;
 
-typedef struct {
-	RouteStatus_t status;	// 流程状态
-	bool loginStatus;
-	bool trig;
-	bool updateSoft;
-}RouteInfo_t;
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -32,17 +26,5 @@ typedef struct {
   * @brief  流程处理
   */
 void        Route_Process       (void);
-
-/**
-  * @brief  流程处理
-  */
-RouteInfo_t *Route_GetInfo(void);
-
-/**
-  * @brief  获取流程状态
-  */
-void        Route_SetLogin(void);
-
-void Route_SetUpdate(void);
 
 #endif /* __ROUTE_H__ */

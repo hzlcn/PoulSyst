@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "serial.h"
+#include "lcd.h"
 // 本头文件用于定义用户数据结构
 
 /* Private define ------------------------------------------------------------*/
@@ -47,11 +48,11 @@ typedef uint8_t ErrorText_t[12];
   * 用户权限类型
   */
 typedef enum {
-	USER_PERM_ADMIN         = 0,    // 管理员
-	USER_PERM_MAINTAIN      = 1,    // 维护员
-	USER_PERM_MERCHANT      = 2,    // 普通用户
-	USER_PERM_CUSTOMER      = 3,    // 普通客户
-	USER_PERM_NULL          = 0xFF, // 无权限
+	USER_PERM_NULL          = 0, 	// 无权限
+	USER_PERM_ADMIN         = 1,    // 管理员
+	USER_PERM_MAINTAIN      = 2,    // 维护员
+	USER_PERM_MERCHANT      = 3,    // 普通用户
+	USER_PERM_CUSTOMER      = 4,    // 普通客户
 }UserPerm_t;
 
 /**
@@ -113,16 +114,23 @@ typedef enum {
   * 显示类型
   */
 typedef enum {
-	DISPLAY_SHOW_RTCTIME,       // 当前时间
-	DISPLAY_SHOW_LABELNUM,      // 标签数
-	DISPLAY_SHOW_GPSSNR,        // GPS信号强度
-	DISPLAY_SHOW_NETICON,       // 网络图标
-	DISPLAY_SHOW_ERRCODE,       // 错误码
 	DISPLAY_SHOW_WORKPAGE,      // 工作页面
 	DISPLAY_SHOW_LOGINPAGE,     // 登录页面
 	DISPLAY_SHOW_ADMINPAGE,     // 管理员页面
 	DISPLAY_SHOW_ADDPAGE,       // 添加页面
 }Display_ShowType_t;
+
+/**
+  *   
+  */
+typedef enum {
+	LOGIN_MERCHANT_READY = 0,
+	LOGIN_MERCHANT_RUNNING,
+	LOGIN_MERCHANT_FAILED,
+	LOGIN_MERCHANT_SUCCESS,
+}Login_Merchant_t;
+
+/* Private typedef -----------------------------------------------------------*/
 
 /**
   * 单条店主信息结构体
@@ -142,6 +150,14 @@ typedef struct {
 }Customer_t;
 
 /**
+  * 用户二维码参数结构体
+  */
+typedef struct {
+	bool isReady;
+	uint8_t code[UART5_BUFFSIZE];
+}RxQrcode_t;
+
+/**
   * 店主信息库结构体
   */
 typedef struct {
@@ -152,14 +168,6 @@ typedef struct {
 		Merchant_t Info[N_MERCBASE_MAX_INFO];
 	}List;                          // 库的信息列表
 }MercBase_t;
-
-/**
-  * 用户二维码参数结构体
-  */
-typedef struct {
-	bool isReady;
-	uint8_t code[UART5_BUFFSIZE];
-}RxQrcode_t;
 
 /**
   * 用户信息结构体
@@ -247,7 +255,7 @@ typedef struct {
   */
 typedef struct {
 	ShowTextType_t type;
-	ShowText_t text[16];
+	ShowText_t *text;
 }ShowTextInfo_t;
 
 /**
@@ -265,6 +273,41 @@ typedef struct {
 	uint8_t pageSum;
 }Display_Opt_t;
 
+typedef struct {
+	Login_Merchant_t loginMerc;
+	bool updateSoft;
+}RoutePara_t;
+
+/**
+  * 食品数据列表
+  */
+typedef struct {	
+	// 食品组类
+	PoulListGroup_t group;
+	
+	// 信息总数
+	u8 kindSum;
+	
+	// 食品信息库索引列表
+	PoulKind_t *pKinds[N_POULTRY_MAX_KIND];
+	
+	// 选项总页数
+	uint8_t pageSum;
+
+	// 当前显示选项页码，从第0页开始
+	uint8_t page;
+}DispOpt_t;
+
+/**
+  * 显示参数
+  */
+typedef struct {
+	ErrorText_t err[10];
+	ShowText_t wTxt[16];
+	DispOpt_t opt;
+	LCD_Page_t page;
+}Display_t;
+
 /* Private typedef -----------------------------------------------------------*/
 /**
   * 临时数据结构体
@@ -273,6 +316,8 @@ typedef struct sTempPara{
 	UserInfo_t user;
 	PoulInfo_t poul;
 	GPS_SVParam_t gps;
+	RoutePara_t route;
+	Display_t display;
 }TempPara_t;
 
 /**
