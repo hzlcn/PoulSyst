@@ -78,7 +78,7 @@ DhcpConfig_t ConfigDhcpMsg = {
   */
 Net_TcpServer_t g_net_Server = {
     .serverIP = { 8, 129, 53, 188 },   //{ 8, 129, 53, 188 },  { 192, 168, 2, 92 }
-    .serverPort = 0x07E5,	// 0x07E6,	//0x1DB0, // 0x07E5
+    .serverPort = 9093,	// 0x07E6,	//0x1DB0, // 0x07E5
     .clientPort = 0x1388, 
     .status = false
 };

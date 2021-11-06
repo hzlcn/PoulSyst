@@ -26,7 +26,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 
-static ModbusInfo_t g_modbusInfo = { 
+ModbusInfo_t g_modbusInfo = { 
 	.cmdList = { MODBUS_CMD_NULL },
 	.cmdData = { 0 },
 	.cmdType = MODBUS_CMD_NULL,

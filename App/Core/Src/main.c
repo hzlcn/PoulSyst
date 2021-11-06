@@ -107,7 +107,7 @@ int main(void)
   MX_UART8_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-//  Main_Init();
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -121,7 +121,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-//    Main_Process();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

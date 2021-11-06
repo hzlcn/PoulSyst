@@ -11,6 +11,7 @@
 typedef bool ErrorStatus_t;
 
 typedef enum {
+	ERROR_NONE = 0,
 	ERROR_DEVICE_UNCOMMUNICATE,         // PLC无通讯
 	ERROR_GPS_UNCOMMUNICATE,   // GPS无信息
 	ERROR_USERQRCODE_UNCOMMUNICATE,      // 外扫码器出错
@@ -19,7 +20,7 @@ typedef enum {
 	ERROR_GPS_NO_SVDATA,       // 无卫星信息
 	ERROR_GPS_NO_LOCATION,       // 无定位信息
 	ERROR_PLC_UNLOCK,       // 未关锁
-	ERROR_NONE = 0xFF,
+	
 }ErrStatus_t;
 
 /* Private macro -------------------------------------------------------------*/

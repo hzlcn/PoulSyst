@@ -201,22 +201,17 @@ void        LCD_Process     (void);
 /**
   * @brief  按字节写入数据
   */
-void        LCD_WriteByte   (uint16_t regAddr, char *pBuf, uint16_t len);
+int         LCD_WriteBytes  (uint16_t regAddr, char *pBuf, uint16_t len);
 
 /**
   * @brief  按字写入数据
   */
-void        LCD_WriteWord   (uint16_t regAddr, uint16_t *pBuf, uint16_t len);
+int         LCD_WriteWords  (uint16_t regAddr, uint16_t *pBuf, uint16_t len);
 
 /**
   * @brief  切换界面
   */
-void        LCD_SwitchPage  (LCD_Page_t page);
-
-/**
-  * @brief  获取页码
-  */
-LCD_Page_t  LCD_GetPage     (void);
+int         LCD_SwitchPage  (LCD_Page_t page);
 
 /**
   * @brief  获取按键状态

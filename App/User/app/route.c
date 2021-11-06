@@ -50,7 +50,7 @@ static TickTimer_t g_routeWhile5sTime = { .start = 0, .count = 5000 };
 /**
   * @brief  运行用户登录流程
   */
-static void Route_UserLogin(RouteStatus_t status);
+static u8 Route_UserLogin(RouteStatus_t status);
 
 /**
   * @brief  处理系统流程
@@ -59,12 +59,13 @@ static void Route_UserLogin(RouteStatus_t status);
   */
 void Route_Process(void)
 {
+	static RouteStatus_t routeStatus = ROUTE_INIT_MODE;
+	static bool routeSellTrig = false;
+
 	Merchant_t *merchant = &User_GetInfo()->merc;
 	Customer_t *customer = &User_GetInfo()->cust;
 	PoulCode_t *poulCode = &Poul_GetInfo()->code;
 	ModbusInfo_t *modbusInfo = Modbus_GetParam();
-	RouteStatus_t routeStatus = ROUTE_INIT_MODE;
-	bool routeSellTrig = false;
 	LCD_Page_t page = g_tmpPara->display.page;
 	uint16_t button = LCD_GetButton();
 	DispOpt_t *pDispOpt = &g_tmpPara->display.opt;
@@ -89,11 +90,7 @@ void Route_Process(void)
 			break;
 		
 		case ROUTE_MERCHANT_LOGIN:
-			Route_UserLogin(routeStatus);
-			if (g_pRoute->loginMerc == LOGIN_MERCHANT_SUCCESS) {
-				// 登录成功
-				User_ClearRecv();	// 清空用户缓冲区
-				
+			if (Route_UserLogin(routeStatus) == 1) {				
 				if ((merchant->perm == USER_PERM_ADMIN) || (merchant->perm == USER_PERM_MAINTAIN))  {
 					// 进入管理员界面
 					routeStatus = ROUTE_ADMIN_MODE;
@@ -103,12 +100,19 @@ void Route_Process(void)
 					// 进入客户登录
 					routeStatus = ROUTE_CUSTOMER_LOGIN;
 					Display_SetLoginText(TEXT_INPUT_CUSTOMER);	
-				}
-				
-				g_pRoute->loginMerc = LOGIN_MERCHANT_READY;
+				}	
 			}
 			break;
 			
+		case ROUTE_CUSTOMER_LOGIN:
+			
+			if (Route_UserLogin(routeStatus) == 1) {
+				// 进入售卖页面
+				routeStatus = ROUTE_PRODUCT_SHOP;
+				Display_SetShow(DISPLAY_SHOW_WORKPAGE);
+			}
+			break;
+
 		case ROUTE_ADMIN_MODE:
 			if (g_tmpPara->display.page == LCD_PAGE_6) {
 				if (button == LCD_ADDR_B_06_02_FORCERUN) {
@@ -129,18 +133,6 @@ void Route_Process(void)
 				// 进入售卖页面
 				Display_SetShow(DISPLAY_SHOW_WORKPAGE);				
 				routeStatus = ROUTE_PRODUCT_SHOP;
-			}
-			break;
-		
-
-		case ROUTE_CUSTOMER_LOGIN:
-			Route_UserLogin(routeStatus);
-			if (g_pRoute->loginMerc == LOGIN_MERCHANT_SUCCESS) {
-				// 登录成功，进入售卖页面
-				User_ClearRecv();	// 清空用户缓冲区
-				routeStatus = ROUTE_PRODUCT_SHOP;
-				Display_SetShow(DISPLAY_SHOW_WORKPAGE);
-				g_pRoute->loginMerc = LOGIN_MERCHANT_READY;
 			}
 			break;
 		
@@ -336,7 +328,7 @@ void Route_Process(void)
   * @param  
   * @retval 
   */
-static void Route_UserLogin(RouteStatus_t status)
+static u8 Route_UserLogin(RouteStatus_t status)
 {
 	Merchant_t *merchant = &User_GetInfo()->merc;
 	Customer_t *customer = &User_GetInfo()->cust;
@@ -362,14 +354,14 @@ static void Route_UserLogin(RouteStatus_t status)
 		
 		// 检查登录
 		if (g_tmpPara->user.recv.isReady == false) {
-			return;
+			return 0;
 		}
 		
 		// 检索本地
 		if (status == ROUTE_MERCHANT_LOGIN) {
 			if (User_CheckLocal() == true) {
 				g_pRoute->loginMerc = LOGIN_MERCHANT_SUCCESS;
-				return;			
+				return 0;			
 			}
 		}
 		
@@ -414,5 +406,11 @@ static void Route_UserLogin(RouteStatus_t status)
 			g_pRoute->loginMerc = LOGIN_MERCHANT_READY;
 		}
 
+	} else if (g_pRoute->loginMerc == LOGIN_MERCHANT_SUCCESS) {
+		// 登录成功
+		User_ClearRecv();	// 清空用户缓冲区
+		g_pRoute->loginMerc = LOGIN_MERCHANT_READY;
+		return 1;
 	}
+	return 0;
 }

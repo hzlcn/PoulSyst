@@ -18,44 +18,39 @@
 void        Display_Init              (void);
 
 /**
-  * @brief  显示数据处理
-  */
-void        Display_Process           (void);
-
-/**
   * @brief  设置显示时间
   * @param  
   * @retval 
   */
-void Disp_SetTime(void);
+int Disp_SetTime(void);
 
 /**
   * @brief  设置显标签数
   * @param  
   * @retval 
   */
-void Disp_SetLabel(void);
+int Disp_SetLabel(void);
 
 /**
   * @brief  设置显示GPS信号
   * @param  
   * @retval 
   */
-void Disp_SetGPSSNR(void);
+int Disp_SetGPSSNR(void);
 
 /**
   * @brief  设置显示网络信号
   * @param  
   * @retval 
   */
-void Disp_SetNetIcon(void);
+int Disp_SetNetIcon(void);
 
 /**
   * @brief  设置显示错误提示
   * @param  
   * @retval 
   */
-void Disp_SetErrTip(void);
+int Disp_SetErrTip(void);
 
 /**
   * @brief  设置显示

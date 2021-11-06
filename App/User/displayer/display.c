@@ -73,12 +73,12 @@ static void Display_SetByteMid(uint8_t *input, uint8_t *output);
 /**
   * @brief  各个页面的按键处理
   */
-static void Page_1_Pro(u16 button);	// 售卖页面
+//static void Page_1_Pro(u16 button);	// 售卖页面
 //static void Page_2_Pro(u16 button);	// 添加二页面
-static void Page_3_Pro(u16 button);	// 选择页面
+//static void Page_3_Pro(u16 button);	// 选择页面
 //static void Page_4_Pro(u16 button);	// 删除页面
 //static void Page_5_Pro(u16 button);	// 超出页面
-static void Page_6_Pro(u16 button);	// 管理员页面
+//static void Page_6_Pro(u16 button);	// 管理员页面
 //static void Page_7_Pro(u16 button);	// 添加一页面
 
 /**
@@ -91,61 +91,12 @@ void Display_Init(void)
 	LCD_Init();
 }
 
-
-/**
-  * @brief  显示数据处理
-  * @param  
-  * @retval 
-  */
-void Display_Process(void)
-{	
-//	LCD_Page_t page = LCD_GetPage();
-//	uint16_t button = LCD_GetButton();
-//	
-//	if (button == 0) {
-//		return ;
-//	}
-//	
-//	switch (page) {
-//		case LCD_PAGE_1:
-//			Page_1_Pro(button);
-//			break;
-//		
-////		case LCD_PAGE_2:
-////			Page_2_Pro(button);
-////			break;
-//		
-//		case LCD_PAGE_3:
-//			Page_3_Pro(button);
-//			break;
-//		
-////		case LCD_PAGE_4:
-////			Page_4_Pro(button);
-////			break;
-//		
-////		case LCD_PAGE_5:
-////			Page_5_Pro(button);
-////			break;
-//		
-//		case LCD_PAGE_6:
-//			Page_6_Pro(button);
-//			break;
-//		
-////		case LCD_PAGE_7:
-////			Page_7_Pro(button);
-////			break;
-//		
-//		default:
-//			break;
-//	}
-}
-
 /**
   * @brief  设置显示时间
   * @param  
-  * @retval 
+  * @retval 0 -- 应答正确；1 -- 无应答；
   */
-void Disp_SetTime(void)
+int Disp_SetTime(void)
 {
 	// LCD地址缓冲区
 	u16 wrAddr = 0;
@@ -154,116 +105,101 @@ void Disp_SetTime(void)
 	RTCTime_t *rtcTime = RTCTime_GetTime();
 	
 	// 当前时间
-	wrAddr = LCD_BASE_ADDR + LCD_GetPage() * LCD_PAGE_STEP + 0x0006;
+	wrAddr = LCD_BASE_ADDR + g_pDisp->page * LCD_PAGE_STEP + 0x0006;
 	
 	sprintf(curDate, "20%02d-%02d-%02d %02d:%02d", 
 		rtcTime->rtc.year, rtcTime->rtc.month, rtcTime->rtc.day, 
 		rtcTime->rtc.hour, rtcTime->rtc.minute);
-	LCD_WriteByte(wrAddr, curDate, 16);
+	
+	return LCD_WriteBytes(wrAddr, curDate, 16);
 }
 
 /**
   * @brief  设置显示标签数
   * @param  
-  * @retval 
+  * @retval 0 -- 应答正确；1 -- 无应答；2 -- 页码错误
   */
-void Disp_SetLabel(void)
+int Disp_SetLabel(void)
 {
-	LCD_Page_t page = LCD_GetPage();
-	// 标签数缓冲区
-	char number[4] = { 0 };
-	// 剩余标签数缓冲区
 	ModbusInfo_t *modbusInfo = Modbus_GetParam();
 	u16 valibNum = modbusInfo->regList[MODBUS_REG_VALIB_LABEL].data;
 	u16 remainnumb = LABEL_TOTAL_NUMBER - valibNum - modbusInfo->regList[MODBUS_REG_INVAL_LABEL].data;
-
-	if (page == LCD_PAGE_1) {
-		// 有效标签
-		sprintf(number, "%04d", valibNum);
-		LCD_WriteByte(LCD_ADDR_T_01_02_LABELNUM, number, 4);
-
-		// 剩余标签
-		memset(number, 0, 4);
-		sprintf(number, "%04d", remainnumb);
-		LCD_WriteByte(LCD_ADDR_T_01_03_REMAINNUM, number, 4);
+	char number[8] = { 0 };	// 标签数缓冲区
+	
+	if (g_pDisp->page != LCD_PAGE_1) {
+		return 2;
 	}
+	
+	// 有效标签
+	sprintf(number, "%04d%04d", valibNum, remainnumb);
+	return LCD_WriteBytes(LCD_ADDR_T_01_02_LABELNUM, number, 8);
 }
 
 /**
   * @brief  设置显示GPS信号
   * @param  
-  * @retval 
+  * @retval 0 -- 应答正确；1 -- ；2 -- 页码错误；3 -- 数据未就绪；
   */
-void Disp_SetGPSSNR(void)
+int Disp_SetGPSSNR(void)
 {
-	LCD_Page_t page = LCD_GetPage();
 	// 卫星信息缓冲区
 	char gpsSvStr[12] = { 0 };
 	GPS_SVParam_t *svInfo = GPS_GetSVDate();
 	
-	if (page == LCD_PAGE_0) {
-		if (GPS_SVIsReady() == true) {
-			sprintf(gpsSvStr, "GPS %c%c,%c%cdB ", svInfo->svNum[0], svInfo->svNum[1], 
-				svInfo->svSnr[0], svInfo->svSnr[1]);
-			LCD_WriteByte(LCD_ADDR_T_00_03_GPSRSSI, gpsSvStr, 12);
-		}
+	// 检查页码
+	if (g_pDisp->page != LCD_PAGE_0) {
+		return 2;
 	}
+	
+	// 检查GPS信号
+	if (GPS_SVIsReady() == false) {
+		return 3;
+	}
+	
+	sprintf(gpsSvStr, "GPS %c%c,%c%cdB ", svInfo->svNum[0], svInfo->svNum[1], 
+		svInfo->svSnr[0], svInfo->svSnr[1]);
+	return LCD_WriteBytes(LCD_ADDR_T_00_03_GPSRSSI, gpsSvStr, 12);
 }
 
 /**
   * @brief  设置显示网络信号
   * @param  
-  * @retval 
+  * @retval 0 -- 应答正确；1 -- 无应答；
   */
-void Disp_SetNetIcon(void)
+int Disp_SetNetIcon(void)
 {
-	LCD_Page_t page = LCD_GetPage();
 	// LCD地址缓冲区
 	u16 wrAddr = 0;
 	NwkStatus_t nwkStatus = Network_GetStatus();
-	// 网络图标缓冲区
-	u16 netIcon = DISPLAY_ICON_NWK_NONE;
+	u16 netIcon = DISPLAY_ICON_NWK_NONE;// 网络图标缓冲区
 	
-	if (page == LCD_PAGE_0) {		// 登录页面
+	// 计算显示地址
+	if (g_pDisp->page == LCD_PAGE_0) {		// 登录页面
 		wrAddr = LCD_ADDR_T_00_06_NETWORKICON;
-	} else if (page == LCD_PAGE_1) {// 工作页面
+	} else if (g_pDisp->page == LCD_PAGE_1) {// 工作页面
 		wrAddr = LCD_ADDR_T_01_06_NETWORKICON;
 	}
 	
-	if (nwkStatus == NETWORK_STATUS_NET) {
+	// 检查网络信号
+	if (nwkStatus == NETWORK_STATUS_NET) {	// 网口
 		netIcon = DISPLAY_ICON_NWK_NET;
-		LCD_WriteWord(wrAddr, &netIcon, 1);
-	} else if (nwkStatus == NETWORK_STATUS_SIM) {
+	} else if (nwkStatus == NETWORK_STATUS_SIM) {	// SIM卡
 		netIcon = DISPLAY_ICON_NWK_SIM;
-		LCD_WriteWord(wrAddr, &netIcon, 1);
-	} else {
-		LCD_WriteWord(wrAddr, &netIcon, 1);
 	}
+	
+	return LCD_WriteWords(wrAddr, &netIcon, 1);
 }
 
 /**
   * @brief  设置显示错误提示
   * @param  
-  * @retval 
+  * @retval 0 -- 应答正确；1 -- 无应答；
   */
-void Disp_SetErrTip(void)
-{
-	// 错误码缓冲区
-	ErrStatus_t errCode = ERROR_NONE;
-	
-	// LCD地址缓冲区
-	u16 wrAddr = 0;
-	
-	char tempor2[20] = { 0 };
-	
-	errCode = Error_GetError();
-	wrAddr = LCD_GetPage() * LCD_PAGE_STEP + LCD_BASE_ADDR;
-
-	if (errCode != ERROR_NONE) {
-		LCD_WriteByte(wrAddr, (char *)g_errorText[errCode], 12);
-	} else {
-		LCD_WriteByte(wrAddr, (char *)tempor2, 12);
-	}
+int Disp_SetErrTip(void)
+{	
+	u16 wrAddr = g_pDisp->page * LCD_PAGE_STEP + LCD_BASE_ADDR;
+	ErrStatus_t errCode = Error_GetError();
+	return LCD_WriteBytes(wrAddr, (char *)g_errorText[errCode], 12);
 }
 
 /**
@@ -274,7 +210,6 @@ void Disp_SetErrTip(void)
 void Display_SetShow(Display_ShowType_t showType)
 {
 	// 获取参数
-	LCD_Page_t page = LCD_GetPage();
 	NwkStatus_t nwkStatus = Network_GetStatus();
 	RTCTime_t *rtcTime = RTCTime_GetTime();
 	PoulInfo_t *poulInfo = Poul_GetInfo();
@@ -311,14 +246,14 @@ void Display_SetShow(Display_ShowType_t showType)
 			
 			// 显示当前禽类名称
 			Display_SetByteMid(poulInfo->pCurKind->name, tempor1);
-			LCD_WriteByte(LCD_ADDR_T_01_05_SPECIES, (char *)tempor1, 10);
+			LCD_WriteBytes(LCD_ADDR_T_01_05_SPECIES, (char *)tempor1, 10);
 
 			// 显示客户
 			if ((merchant->perm == USER_PERM_MAINTAIN) || (merchant->perm == USER_PERM_ADMIN)) {
-				LCD_WriteByte(LCD_ADDR_T_01_04_CUSTOMER, (char *)g_testModeText, 20);
+				LCD_WriteBytes(LCD_ADDR_T_01_04_CUSTOMER, (char *)g_testModeText, 20);
 			} else {
 				if (customer->perm == USER_PERM_CUSTOMER) {
-					LCD_WriteByte(LCD_ADDR_T_01_04_CUSTOMER, (char *)customer->name, 20);
+					LCD_WriteBytes(LCD_ADDR_T_01_04_CUSTOMER, (char *)customer->name, 20);
 				}
 			}
 
@@ -340,13 +275,13 @@ void Display_SetShow(Display_ShowType_t showType)
 			// 设置机器ID
 			memcpy(devAddr, Store_GetConfig()->devAddr, sizeof(DevAddr_t));
 			sprintf(tempor2, "%02x-%02x-%02x-%02x-%02x-%02x   ", devAddr[0], devAddr[1], devAddr[2], devAddr[3], devAddr[4], devAddr[5]);
-			LCD_WriteByte(LCD_ADDR_T_00_04_MACHINEID, tempor2, 20);
+			LCD_WriteBytes(LCD_ADDR_T_00_04_MACHINEID, tempor2, 20);
 
 			// 设置版本号
 			memset(tempor2, 0, 20);
 			Version_t *version = &Store_GetConfig()->version;
 			sprintf(tempor2, "soft - %02x, hard - %02x", version->soft, version->hard);
-			LCD_WriteByte(LCD_ADDR_T_00_05_FIRMWARE, tempor2, 20);
+			LCD_WriteBytes(LCD_ADDR_T_00_05_FIRMWARE, tempor2, 20);
 			break;
 		}
 		case DISPLAY_SHOW_ADMINPAGE:
@@ -357,7 +292,7 @@ void Display_SetShow(Display_ShowType_t showType)
 //		case DISPLAY_SHOW_ADDPAGE:
 //		{
 //			// 重置食品列表，显示列表按键
-//			if (LCD_GetPage() == LCD_PAGE_2) {
+//			if (g_pDisp->page == LCD_PAGE_2) {
 //				Disp_SetList(Poul_GetInfo()->list.group, g_allData.temp.poul.base[1]);
 //				Display_ShowOptions(LCD_ADDR_T_02_02_CHOOSE_11);
 //			}
@@ -376,7 +311,7 @@ void Display_SetShow(Display_ShowType_t showType)
 void Display_SetLoginText(ShowTextType_t textType)
 {   // 显示文本
 	g_showText.type = textType;
-	LCD_WriteWord(LCD_ADDR_T_00_02_SHOWTEXT, g_showText.text[textType], 5);
+	LCD_WriteWords(LCD_ADDR_T_00_02_SHOWTEXT, g_showText.text[textType], 5);
 }
 
 void Disp_SetList(PoulListGroup_t group, PoulBase_t *base)
@@ -414,11 +349,11 @@ void Display_ShowOptions(uint16_t addr)
 		if ((g_pOpt->page * OPTION_NUMBER + i) < poulList->sum) {
 			// 显示禽类名称
 			Display_SetByteMid(poulList->pKinds[g_pOpt->page * OPTION_NUMBER + i]->name, transBuf);
-			LCD_WriteByte(addr, (char *)transBuf, 10);
+			LCD_WriteBytes(addr, (char *)transBuf, 10);
 		} else {
 			// 显示“无”
 			Display_SetByteMid(gbk_NULL, transBuf);
-			LCD_WriteByte(addr, (char *)transBuf, 10);
+			LCD_WriteBytes(addr, (char *)transBuf, 10);
 		}
 		addr += 5;
 	}
@@ -447,131 +382,131 @@ static void Display_SetByteMid(uint8_t *input, uint8_t *output)
 	}
 }
 
-/**
-  * @brief  售卖页面按键处理
-  * @param  
-  * @retval 
-  */
-static void Page_1_Pro(u16 button)
-{
-	Merchant_t *merchant = &User_GetInfo()->merc;
-	PoulListGroup_t group = POUL_LISTGROUPTYPE_NONE;
-	switch (button) {
-		case LCD_ADDR_B_01_07_CLEARLABEL:
-			// 清除废纸
-//			if( PLCService.GetRTUStatus( ) != WRITE_MANUL_CLEAR_LABEL_ACK ) {
-//				PLCService.ClearWaste( );				//清除废纸标志位  全局变量
+///**
+//  * @brief  售卖页面按键处理
+//  * @param  
+//  * @retval 
+//  */
+//static void Page_1_Pro(u16 button)
+//{
+//	Merchant_t *merchant = &User_GetInfo()->merc;
+//	PoulListGroup_t group = POUL_LISTGROUPTYPE_NONE;
+//	switch (button) {
+//		case LCD_ADDR_B_01_07_CLEARLABEL:
+//			// 清除废纸
+////			if( PLCService.GetRTUStatus( ) != WRITE_MANUL_CLEAR_LABEL_ACK ) {
+////				PLCService.ClearWaste( );				//清除废纸标志位  全局变量
+////			}
+//			break;
+//		
+//		case LCD_ADDR_B_01_08_CHICK:	// 选项：鸡
+//		case LCD_ADDR_B_01_09_DUCK:		// 选项：鸭		
+//		case LCD_ADDR_B_01_10_GOOSE:	// 选项：鹅
+//		case LCD_ADDR_B_01_11_OTHERS:	// 选项：其它
+//			group = button - LCD_ADDR_B_01_08_CHICK;
+//			Disp_SetList(group, g_tmpPara->poul.base[0]);	// 设置选项列表
+//			LCD_SwitchPage(LCD_PAGE_3);							// 跳转选择页面
+//			Display_ShowOptions(LCD_ADDR_T_03_02_CHOOSE_11);	// 设置选项内容
+//			break;
+//		
+//		case LCD_ADDR_B_01_12_EXIT:
+//			// 退出登录
+//			if ((merchant->perm == USER_PERM_ADMIN) || 
+//				(merchant->perm == USER_PERM_MAINTAIN)) 
+//			{
+//				LCD_SwitchPage(LCD_PAGE_6);
+//			} else {
+//				LCD_SwitchPage(LCD_PAGE_0);
 //			}
-			break;
-		
-		case LCD_ADDR_B_01_08_CHICK:	// 选项：鸡
-		case LCD_ADDR_B_01_09_DUCK:		// 选项：鸭		
-		case LCD_ADDR_B_01_10_GOOSE:	// 选项：鹅
-		case LCD_ADDR_B_01_11_OTHERS:	// 选项：其它
-			group = button - LCD_ADDR_B_01_08_CHICK;
-			Disp_SetList(group, g_tmpPara->poul.base[0]);	// 设置选项列表
-			LCD_SwitchPage(LCD_PAGE_3);							// 跳转选择页面
-			Display_ShowOptions(LCD_ADDR_T_03_02_CHOOSE_11);	// 设置选项内容
-			break;
-		
-		case LCD_ADDR_B_01_12_EXIT:
-			// 退出登录
-			if ((merchant->perm == USER_PERM_ADMIN) || 
-				(merchant->perm == USER_PERM_MAINTAIN)) 
-			{
-				LCD_SwitchPage(LCD_PAGE_6);
-			} else {
-				LCD_SwitchPage(LCD_PAGE_0);
-			}
-			break;
-			
-		default:
-			break;
-	}
-}
+//			break;
+//			
+//		default:
+//			break;
+//	}
+//}
 
 
-/**
-  * @brief  选择页面按键处理
-  * @param  button	按键值
-  * @retval 
-  */
-static void Page_3_Pro(u16 button)
-{
-	PoulKind_t *poulKind = NULL;
-	switch (button) {
-		case LCD_ADDR_B_03_10_CHOOSE_11:
-		case LCD_ADDR_B_03_11_CHOOSE_12:
-		case LCD_ADDR_B_03_12_CHOOSE_13:
-		case LCD_ADDR_B_03_13_CHOOSE_14:
-		case LCD_ADDR_B_03_14_CHOOSE_21:
-		case LCD_ADDR_B_03_15_CHOOSE_22:
-		case LCD_ADDR_B_03_16_CHOOSE_23:
-		case LCD_ADDR_B_03_17_CHOOSE_24:
-			// 读取该项禽类信息
-			poulKind = g_pOpt->pKinds[g_pOpt->page * OPTION_NUMBER + button - LCD_ADDR_B_03_10_CHOOSE_11];
-			if (poulKind == NULL) {
-				break;
-			}
-			
-			// 设置该项禽类为选中禽类
-			Poul_SetKind(poulKind);
-			
-			// 返回售卖页面
-			Display_SetShow(DISPLAY_SHOW_WORKPAGE);
-			break;
+///**
+//  * @brief  选择页面按键处理
+//  * @param  button	按键值
+//  * @retval 
+//  */
+//static void Page_3_Pro(u16 button)
+//{
+//	PoulKind_t *poulKind = NULL;
+//	switch (button) {
+//		case LCD_ADDR_B_03_10_CHOOSE_11:
+//		case LCD_ADDR_B_03_11_CHOOSE_12:
+//		case LCD_ADDR_B_03_12_CHOOSE_13:
+//		case LCD_ADDR_B_03_13_CHOOSE_14:
+//		case LCD_ADDR_B_03_14_CHOOSE_21:
+//		case LCD_ADDR_B_03_15_CHOOSE_22:
+//		case LCD_ADDR_B_03_16_CHOOSE_23:
+//		case LCD_ADDR_B_03_17_CHOOSE_24:
+//			// 读取该项禽类信息
+//			poulKind = g_pOpt->pKinds[g_pOpt->page * OPTION_NUMBER + button - LCD_ADDR_B_03_10_CHOOSE_11];
+//			if (poulKind == NULL) {
+//				break;
+//			}
+//			
+//			// 设置该项禽类为选中禽类
+//			Poul_SetKind(poulKind);
+//			
+//			// 返回售卖页面
+//			Display_SetShow(DISPLAY_SHOW_WORKPAGE);
+//			break;
 
-		case LCD_ADDR_B_03_18_HOME:
-			// 返回售卖页面
-			Display_SetShow(DISPLAY_SHOW_WORKPAGE);
-			break;
-		
-		case LCD_ADDR_B_03_19_LAST:
-			// 上一页
-			if (g_pOpt->page > 0) {
-				g_pOpt->page--;
-				Display_ShowOptions(LCD_ADDR_T_03_02_CHOOSE_11);
-//			} else {
-//				LCD_SwitchPage(LCD_PAGE_5);
-			}
-			break;
-			
-		case LCD_ADDR_B_03_20_NEXT:
-			// 下一页
-			if (g_pOpt->page + 1 < g_pOpt->pageSum) {
-				g_pOpt->page++;
-				Display_ShowOptions(LCD_ADDR_T_03_02_CHOOSE_11);
-//			} else {
-//				LCD_SwitchPage(LCD_PAGE_5);
-			}
-			break;
-			
-		default:
-			break;
-	}
-}
+//		case LCD_ADDR_B_03_18_HOME:
+//			// 返回售卖页面
+//			Display_SetShow(DISPLAY_SHOW_WORKPAGE);
+//			break;
+//		
+//		case LCD_ADDR_B_03_19_LAST:
+//			// 上一页
+//			if (g_pOpt->page > 0) {
+//				g_pOpt->page--;
+//				Display_ShowOptions(LCD_ADDR_T_03_02_CHOOSE_11);
+////			} else {
+////				LCD_SwitchPage(LCD_PAGE_5);
+//			}
+//			break;
+//			
+//		case LCD_ADDR_B_03_20_NEXT:
+//			// 下一页
+//			if (g_pOpt->page + 1 < g_pOpt->pageSum) {
+//				g_pOpt->page++;
+//				Display_ShowOptions(LCD_ADDR_T_03_02_CHOOSE_11);
+////			} else {
+////				LCD_SwitchPage(LCD_PAGE_5);
+//			}
+//			break;
+//			
+//		default:
+//			break;
+//	}
+//}
 
-/**
-  * @brief  管理员页面按键处理
-  * @param  
-  * @retval 
-  */
-static void Page_6_Pro(u16 button)
-{
-	if (button == LCD_ADDR_B_06_02_FORCERUN) {
-		Display_SetShow(DISPLAY_SHOW_WORKPAGE);
+///**
+//  * @brief  管理员页面按键处理
+//  * @param  
+//  * @retval 
+//  */
+//static void Page_6_Pro(u16 button)
+//{
+//	if (button == LCD_ADDR_B_06_02_FORCERUN) {
+//		Display_SetShow(DISPLAY_SHOW_WORKPAGE);
 
-	} else if (button == LCD_ADDR_B_06_03_UNLOCK) {
-		Modbus_AddCmd(MODBUS_CMD_UNLOCK_DEVICE);
-		CMNC_AddCmd(UL_FUNC_9);
-		
-	} else if (button == LCD_ADDR_B_06_04_SPECIES) {
-		LCD_SwitchPage(LCD_PAGE_7);
+//	} else if (button == LCD_ADDR_B_06_03_UNLOCK) {
+//		Modbus_AddCmd(MODBUS_CMD_UNLOCK_DEVICE);
+//		CMNC_AddCmd(UL_FUNC_9);
+//		
+//	} else if (button == LCD_ADDR_B_06_04_SPECIES) {
+//		LCD_SwitchPage(LCD_PAGE_7);
 
-	} else if (button == LCD_ADDR_B_06_05_MAINTAIN) {
-//		LCD_SwitchPage(LCD_PAGE_8);
-	}
-}
+//	} else if (button == LCD_ADDR_B_06_05_MAINTAIN) {
+////		LCD_SwitchPage(LCD_PAGE_8);
+//	}
+//}
 
 ///**
 //  * @brief  添加二页面按键处理

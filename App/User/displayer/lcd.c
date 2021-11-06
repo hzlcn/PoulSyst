@@ -80,12 +80,7 @@ const uint8_t g_LCD_Ack[6] = { 0x5a, 0xa5, 0x03, 0x82, 0x4f, 0x4b };
   * @param  
   * @retval 
   */
-static void LCD_Send(uint8_t *pBuf, uint16_t len);
-
-/**
-  * @brief  等待应答
-  */
-static bool LCD_WaitAck(uint32_t timeout);
+static int LCD_Send(uint8_t *pBuf, uint16_t len);
 
 /**
   * @brief  打开显示器
@@ -105,6 +100,7 @@ void LCD_Init(void)
   */
 void LCD_Process(void)
 {
+	u16 button = 0;
 	uint16_t rxLen = Uart_GetData(&huart4, g_LCD_RxBuf);
 	if (rxLen > 0) {
 		if ((g_LCD_RxBuf[0] == 0x5A) && 
@@ -112,8 +108,9 @@ void LCD_Process(void)
 			(g_LCD_RxBuf[2] == 0x06) && 
 			(g_LCD_RxBuf[3] == 0x83))
 		{
+			button = (g_LCD_RxBuf[4] << 8) | g_LCD_RxBuf[5];
 			if (g_LCD_Button == 0) {
-				g_LCD_Button = (g_LCD_RxBuf[4] << 8) | g_LCD_RxBuf[5];
+				g_LCD_Button = button;
 			}
 		}
 		memset(g_LCD_RxBuf, 0, UART4_BUFFSIZE);
@@ -122,12 +119,13 @@ void LCD_Process(void)
 
 /**
   * @brief  按字节写入数据
-  * @param  waddr: 写入的地址;
-  *         buffer: 数据缓冲区; 
-  *         len: 字节长度
-  * @retval 
+  * @param  regAddr: 写入的地址;
+  *         pBuf:    数据缓冲区; 
+  *         len:     字节长度
+  *         timeout: 超时时间，单位ms
+  * @retval 0 -- 应答正确；1 -- 无应答；
   */
-void LCD_WriteByte(uint16_t regAddr, char *pBuf, uint16_t len)
+int LCD_WriteBytes(uint16_t regAddr, char *pBuf, uint16_t len)
 {
 	memset(g_LCD_TxBuf, 0, UART4_BUFFSIZE);
 	g_LCD_TxLen = 0;
@@ -141,11 +139,13 @@ void LCD_WriteByte(uint16_t regAddr, char *pBuf, uint16_t len)
 	for (uint16_t i = 0; i < len; i++) {
 		g_LCD_TxBuf[g_LCD_TxLen++] = pBuf[i];
 	}
-	LCD_Send(g_LCD_TxBuf, g_LCD_TxLen);
+	
 #if (DBG_TRACE == 1)
 	DBG("send(LCD):");
 	PrintHexBuffer(g_LCD_TxBuf, g_LCD_TxLen);
 #endif
+
+	return LCD_Send(g_LCD_TxBuf, g_LCD_TxLen);
 }
 
 /**
@@ -153,9 +153,9 @@ void LCD_WriteByte(uint16_t regAddr, char *pBuf, uint16_t len)
   * @param  waddr: 写入的地址;
   *         buffer: 数据缓冲区; 
   *         len: 字长度
-  * @retval 
+  * @retval 0 -- 应答正确；1 -- 无应答；
   */
-void LCD_WriteWord(uint16_t regAddr, uint16_t *pBuf, uint16_t len)
+int LCD_WriteWords(uint16_t regAddr, uint16_t *pBuf, uint16_t len)
 {
 	uint16_t i;
 	
@@ -172,20 +172,22 @@ void LCD_WriteWord(uint16_t regAddr, uint16_t *pBuf, uint16_t len)
 		g_LCD_TxBuf[g_LCD_TxLen++] = (pBuf[i] & 0xFF00) >> 8;
 		g_LCD_TxBuf[g_LCD_TxLen++] = (pBuf[i] & 0x00FF) >> 0;
 	}
-	LCD_Send(g_LCD_TxBuf, g_LCD_TxLen);
+	
 #if (DBG_TRACE == 1)
 	DBG("send(LCD):");
 	PrintHexBuffer(g_LCD_TxBuf, g_LCD_TxLen);
 #endif
+
+	return LCD_Send(g_LCD_TxBuf, g_LCD_TxLen);	
 }
 
 /**
   * @brief  切换界面
   * @param  page: 切换的页数;
   *         type: 自动切换还是指令切换
-  * @retval 
+  * @retval 0 -- 应答正确；1 -- 无应答；
   */
-void LCD_SwitchPage(LCD_Page_t page)
+int LCD_SwitchPage(LCD_Page_t page)
 {
 	memset(g_LCD_TxBuf, 0, UART4_BUFFSIZE);
 	g_LCD_TxLen = 0;
@@ -201,23 +203,14 @@ void LCD_SwitchPage(LCD_Page_t page)
 	g_LCD_TxBuf[g_LCD_TxLen++] = 0x00;
 	g_LCD_TxBuf[g_LCD_TxLen++] = page;
 	
-	LCD_Send(g_LCD_TxBuf, g_LCD_TxLen);
+	*g_LCD_Page = page;
+
 #if (DBG_TRACE == 1)
 	DBG("send(LCD):");
 	PrintHexBuffer(g_LCD_TxBuf, 10);
 #endif
 
-	*g_LCD_Page = page;
-}
-
-/**
-  * @brief  获取页码
-  * @param  
-  * @retval 
-  */
-LCD_Page_t LCD_GetPage(void)
-{
-	return *g_LCD_Page;
+	return LCD_Send(g_LCD_TxBuf, g_LCD_TxLen);
 }
 
 /**
@@ -234,26 +227,17 @@ uint16_t LCD_GetButton(void)
 
 /**
   * @brief  发送LCD数据
-  * @param  
-  * @retval 
+  * @param  pBuf：数据缓冲区
+  *         len： 数据长度
+  * @retval 0 -- 应答正确；1 -- 无应答；
   */
-static void LCD_Send(uint8_t *pBuf, uint16_t len)
+static int LCD_Send(uint8_t *pBuf, uint16_t len)
 {
-	Uart4_Send(pBuf, len);
-	if (LCD_WaitAck(10) == false) {
-		Uart4_Send(pBuf, len);
-	}
-}
-
-/**
-  * @brief  等待应答
-  * @param  
-  * @retval 
-  */
-static bool LCD_WaitAck(uint32_t timeout)
-{
-	bool ret = false;
+	int ret = 1;
 	uint16_t rxLen = 0;
+	u16 timeout = 10;
+	Uart4_Send(pBuf, len);
+	
 	while (timeout--) {
 		rxLen = Uart_GetData(&huart4, g_LCD_RxBuf);
 		if (rxLen > 0) {
@@ -265,7 +249,7 @@ static bool LCD_WaitAck(uint32_t timeout)
 				(g_LCD_RxBuf[4] == g_LCD_Ack[4]) && 
 				(g_LCD_RxBuf[5] == g_LCD_Ack[5])) 
 			{
-				ret = true;
+				ret = 0;
 				break;
 			}
 			// 按键返回

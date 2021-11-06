@@ -30,7 +30,7 @@
 #include "apps.h"
 #include "w5500_ex.h"
 #include "drivers.h"
-
+#include "route.h"
 #include "debug.h"
 /* USER CODE END Includes */
 
@@ -57,8 +57,8 @@
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 512 * 4
+  .priority = (osPriority_t) osPriorityLow,
+  .stack_size = 128 * 4
 };
 /* Definitions for WireTask */
 osThreadId_t WireTaskHandle;
@@ -73,6 +73,13 @@ const osThreadAttr_t MobileTask_attributes = {
   .name = "MobileTask",
   .priority = (osPriority_t) osPriorityLow,
   .stack_size = 128 * 4
+};
+/* Definitions for RouteTask04 */
+osThreadId_t RouteTask04Handle;
+const osThreadAttr_t RouteTask04_attributes = {
+  .name = "RouteTask04",
+  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 512 * 4
 };
 /* Definitions for NetTxMutex */
 osMutexId_t NetTxMutexHandle;
@@ -123,6 +130,7 @@ const osSemaphoreAttr_t SimStatusBinarySem_attributes = {
 void StartDefaultTask(void *argument);
 void StartTask02(void *argument);
 void StartTask03(void *argument);
+void StartTask04(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -186,6 +194,9 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of MobileTask */
   MobileTaskHandle = osThreadNew(StartTask03, NULL, &MobileTask_attributes);
+
+  /* creation of RouteTask04 */
+  RouteTask04Handle = osThreadNew(StartTask04, NULL, &RouteTask04_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -259,6 +270,27 @@ void StartTask03(void *argument)
     osDelay(1);
   }
   /* USER CODE END StartTask03 */
+}
+
+/* USER CODE BEGIN Header_StartTask04 */
+/**
+* @brief Function implementing the RouteTask04 thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask04 */
+void StartTask04(void *argument)
+{
+  /* USER CODE BEGIN StartTask04 */
+  osDelay(1000);
+  /* Infinite loop */
+  for(;;)
+  {
+    // 运行流程: 设备登录->用户登录->客户登录->商品购买
+	Route_Process();
+    osDelay(1);
+  }
+  /* USER CODE END StartTask04 */
 }
 
 /* Private application code --------------------------------------------------*/
