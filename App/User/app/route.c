@@ -302,6 +302,12 @@ void Route_Process(void)
 
 		// 处理网络图标
 		Disp_SetNetIcon();
+		
+		// 获取门锁状态 + 标签数
+		Modbus_AddCmd(MODBUS_CMD_GETLOCKSTATUS);
+		Modbus_AddCmd(MODBUS_CMD_READ_VALIBNUM);
+		Modbus_AddCmd(MODBUS_CMD_READ_INVALNUM);
+
 	}
 	
 	// 5s处理

@@ -233,11 +233,6 @@ void Main_Process(void)
 		
 		// 运行状态灯
 		LED_TURN;
-		
-		// 获取门锁状态 + 标签数
-		Modbus_AddCmd(MODBUS_CMD_GETLOCKSTATUS);
-		Modbus_AddCmd(MODBUS_CMD_READ_VALIBNUM);
-		Modbus_AddCmd(MODBUS_CMD_READ_INVALNUM);
 	}
 	
 	// 5秒处理

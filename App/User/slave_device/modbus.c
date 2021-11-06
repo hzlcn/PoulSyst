@@ -33,18 +33,18 @@ static ModbusInfo_t g_modbusInfo = {
 	.reTxNum = 0,
 	.devJoin = false,
 	.regList = {
-		{ .addr = MODBUS_ADDR_MACHINE_RESET, .data = 0, },
-		{ .addr = MODBUS_ADDR_CHEAR_LABEL, .data = 0, },
-		{ .addr = MODBUS_ADDR_CLEAR_RESET, .data = 0, },
-		{ .addr = MODBUS_ADDR_TRIGGER_LAB, .data = 0, },
-		{ .addr = MODBUS_ADDR_LABEL_ERROR, .data = 0, },
-		{ .addr = MODBUS_ADDR_PRESS_ERROR, .data = 0, },
+		{ .addr = MODBUS_ADDR_MACHINE_RESET, .data = 0, },	// 机器复位
+		{ .addr = MODBUS_ADDR_CHEAR_LABEL, .data = 0, },	// 
+		{ .addr = MODBUS_ADDR_CLEAR_RESET, .data = 0, },	// 
+		{ .addr = MODBUS_ADDR_TRIGGER_LAB, .data = 0, },	// 贴标触发
+		{ .addr = MODBUS_ADDR_LABEL_ERROR, .data = 0, },	// 贴标错误
+		{ .addr = MODBUS_ADDR_PRESS_ERROR, .data = 0, },	// 
 		{ .addr = MODBUS_ADDR_CLAMP_ERROR, .data = 0, },
-		{ .addr = MODBUS_ADDR_LOCK_STATUS, .data = 0, },
-		{ .addr = MODBUS_ADDR_WORK_STATUS, .data = 0, },
-		{ .addr = MODBUS_ADDR_LOCK_OPERATE, .data = 0, },
-		{ .addr = MODBUS_ADDR_VALIB_LABEL, .data = 0, },
-		{ .addr = MODBUS_ADDR_INVAL_LABEL, .data = 0, },
+		{ .addr = MODBUS_ADDR_LOCK_STATUS, .data = 0, },	// 锁状态
+		{ .addr = MODBUS_ADDR_WORK_STATUS, .data = 0, },	// 工作状态
+		{ .addr = MODBUS_ADDR_LOCK_OPERATE, .data = 0, },	// 锁操作
+		{ .addr = MODBUS_ADDR_VALIB_LABEL, .data = 0, },	// 有效标签数
+		{ .addr = MODBUS_ADDR_INVAL_LABEL, .data = 0, },	// 无效标签数
 	},
 };
 
