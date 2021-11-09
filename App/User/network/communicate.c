@@ -544,10 +544,24 @@ static void CMNC_Prepare(CMNC_CmdType_t type)
 		data[g_CMNC_TxLen++] = version->hard;
 
 		// 系统时间
-		data[g_CMNC_TxLen++] = rtcTime->rtc.year;
-		data[g_CMNC_TxLen++] = rtcTime->rtc.month;
-		data[g_CMNC_TxLen++] = rtcTime->rtc.day;
-		data[g_CMNC_TxLen++] = rtcTime->rtc.hour;
+//		data[g_CMNC_TxLen++] = rtcTime->rtc.year;
+//		data[g_CMNC_TxLen++] = rtcTime->rtc.month;
+//		data[g_CMNC_TxLen++] = rtcTime->rtc.day;
+//		data[g_CMNC_TxLen++] = rtcTime->rtc.hour;
+		
+		// 用户信息库版本
+		MercBase_t *mercBase = User_GetInfo()->mercBase;
+		data[g_CMNC_TxLen++] = mercBase->Version[0];
+		data[g_CMNC_TxLen++] = mercBase->Version[1];
+
+		// 食品信息库版本
+		PoulBase_t *poulBase = Poul_GetInfo()->base[0];
+		data[g_CMNC_TxLen++] = poulBase->version[0];
+		data[g_CMNC_TxLen++] = poulBase->version[1];
+
+		// 标签
+		memset(data + g_CMNC_TxLen, 0x31, 20);
+		g_CMNC_TxLen += 20;
 		
 		// GPS信息
 		GPS_GetLLData(data + g_CMNC_TxLen);

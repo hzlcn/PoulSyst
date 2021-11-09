@@ -1,0 +1,103 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: ¦ÌVision V5.25.2.0
+Copyright (C) 2018 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: jack boy, none, LIC=Z3C6R-KU81D-AW02F-6U8UT-5IIFH-3I58X
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Professional  Version: 5.25.2.0
+Toolchain Path:  D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 6 (build 750)
+Assembler:       Armasm.exe V5.06 update 6 (build 750)
+Linker/Locator:  ArmLink.exe V5.06 update 6 (build 750)
+Library Manager: ArmAr.exe V5.06 update 6 (build 750)
+Hex Converter:   FromElf.exe V5.06 update 6 (build 750)
+CPU DLL:         SARMCM3.DLL V5.25.2.0
+Dialog DLL:      DCM.DLL V1.17.1.0
+Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.0.1.0
+Dialog DLL:      TCM.DLL V1.35.1.0
+ 
+<h2>Project:</h2>
+D:\02 Work\01 STM32Proj\02-PoulSyst\01 Project\PoulSyst\App\MDK-ARM\PoulSyst.uvprojx
+Project File Date:  11/06/2021
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin'
+Build target 'PoulSyst'
+compiling apps.c...
+..\User\app\apps.c(84): warning:  #188-D: enumerated type mixed with another type
+  		.route = { 0 },
+..\User\app\apps.c(115): warning:  #188-D: enumerated type mixed with another type
+  			.opt = { 0 },
+..\User\app\apps.c: 2 warnings, 0 errors
+compiling main.c...
+compiling freertos.c...
+compiling store.c...
+compiling gps.c...
+compiling route.c...
+..\User\app\route.c(155): warning:  #188-D: enumerated type mixed with another type
+  						group = button - LCD_ADDR_B_01_08_CHICK;
+..\User\app\route.c(69): warning:  #177-D: variable "page"  was declared but never referenced
+  	LCD_Page_t page = g_tmpPara->display.page;
+..\User\app\route.c: 2 warnings, 0 errors
+compiling dhcp.c...
+compiling w5500_ex.c...
+compiling communicate.c...
+compiling modbus.c...
+compiling display.c...
+..\User\displayer\display.c(222): warning:  #177-D: variable "netIcon"  was declared but never referenced
+  	u16 netIcon = DISPLAY_ICON_NWK_NONE;
+..\User\displayer\display.c(225): warning:  #177-D: variable "number"  was declared but never referenced
+  	char number[4] = { 0 };
+..\User\displayer\display.c(229): warning:  #177-D: variable "remainnumb"  was declared but never referenced
+  	u16 remainnumb = LABEL_TOTAL_NUMBER - valibNum - modbusInfo->regList[MODBUS_REG_INVAL_LABEL].data;
+..\User\displayer\display.c: 3 warnings, 0 errors
+compiling modbus_rtu.c...
+..\User\slave_device\modbus_rtu.c(197): warning:  #177-D: variable "i"  was declared but never referenced
+  	int i;
+..\User\slave_device\modbus_rtu.c(223): warning:  #177-D: variable "i"  was declared but never referenced
+  	int i;
+..\User\slave_device\modbus_rtu.c(249): warning:  #177-D: variable "i"  was declared but never referenced
+  	int i = 0, ret = 0;
+..\User\slave_device\modbus_rtu.c(249): warning:  #177-D: variable "ret"  was declared but never referenced
+  	int i = 0, ret = 0;
+..\User\slave_device\modbus_rtu.c(283): warning:  #177-D: variable "i"  was declared but never referenced
+  	int i = 0, ret = 0;
+..\User\slave_device\modbus_rtu.c(283): warning:  #177-D: variable "ret"  was declared but never referenced
+  	int i = 0, ret = 0;
+..\User\slave_device\modbus_rtu.c: 6 warnings, 0 errors
+compiling drivers.c...
+linking...
+Program Size: Code=62960 RO-data=2004 RW-data=3936 ZI-data=64200  
+FromELF: creating hex file...
+After Build - User command #1: "D:\Program Files (x86)\Keil_v5\ARM\ARMCC\bin\fromelf.exe" --bin --output ./PoulSyst/PoulSyst.bin ./PoulSyst/PoulSyst.axf
+"PoulSyst\PoulSyst.axf" - 0 Error(s), 13 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.8.0.pack
+                ARM.CMSIS.5.8.0
+                CMSIS (Common Microcontroller Software Interface Standard)
+   * Component: CORE Version: 5.5.0
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.STM32F4xx_DFP.2.11.0.pack
+                Keil.STM32F4xx_DFP.2.11.0
+                STMicroelectronics STM32F4 Series Device Support, Drivers and Examples
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\_PoulSyst
+  D:\Program Files (x86)\Keil_v5\ARM\PACK\ARM\CMSIS\5.8.0\CMSIS\Core\Include
+  D:\Program Files (x86)\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.11.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:5.5.0
+Build Time Elapsed:  00:00:26
+</pre>
+</body>
+</html>

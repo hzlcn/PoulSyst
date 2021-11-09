@@ -202,7 +202,7 @@ void Main_Process(void)
 	LCD_Process();
 
 	// Modbus的发送接收处理
-	Modbus_Process();
+	//Modbus_Process();
 			
 	// GPRS数据解析
 	GPS_Process();

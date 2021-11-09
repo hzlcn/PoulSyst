@@ -27,10 +27,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 ModbusInfo_t g_modbusInfo = { 
-	.cmdList = { MODBUS_CMD_NULL },
-	.cmdData = { 0 },
-	.cmdType = MODBUS_CMD_NULL,
-	.reTxNum = 0,
 	.devJoin = false,
 	.regList = {
 		{ .addr = MODBUS_ADDR_MACHINE_RESET, .data = 0, },	// 机器复位
@@ -51,58 +47,75 @@ ModbusInfo_t g_modbusInfo = {
 /**
   * 数据缓冲区
   */
-static uint8_t  g_modbusRxBuf[UART7_BUFFSIZE] = { 0 };
-static uint16_t g_modbusRxLen = 0;
-
-/**
-  * 定时计数
-  */
-static uint32_t g_modbusTick = 0;
-static TickTimer_t g_modbusAckTimeout;// 应答超时
-static TickTimer_t g_modbusClearReset;// 清除复位
-static TickTimer_t g_modbusTrigReset; // 触发复位
+u8 g_RTUTxBuff[1024];
+u8 g_RTURxBuff[1024];
 
 /* Private function prototypes -----------------------------------------------*/
 
 /**
-  * @brief  发送指令处理
+  * @brief  修改寄存器值
+  * @param  
+  * @retval 1	修改成功
+  *         0   未找到寄存器
   */
-static void Modbus_TxProcess(void);
+static int RTU_SetReg(u16 addr, u16 data);
 
 /**
-  * @brief  接收处理
+  * @brief  解析功能码为01的应答数据
+  * @param  
+  * @retval 
   */
-static void Modbus_RxProcess(void);
+static int RTU_01_Parse(u8 *pData, u16 len, u16 addr);
 
 /**
-  * @brief  处理定时器
+  * @brief  解析功能码为03的应答数据
+  * @param  
+  * @retval 
   */
-static void Modbus_TimProcess(void);
+static int RTU_03_Parse(u8 *pData, u16 len, u16 addr);
 
 /**
-  * @brief  处理功能码为01的指令
+  * @brief  解析功能码为05的应答数据
+  * @param  
+  * @retval 
   */
-static void Modbus_01_Pro(void);
+static int RTU_05_Parse(u8 *pData, u16 len, u16 addr);
 
 /**
-  * @brief  处理功能码为03的指令
+  * @brief  解析功能码为06的应答数据
+  * @param  
+  * @retval 
   */
-static void Modbus_03_Pro(void);
+static int RTU_06_Parse(u8 *pData, u16 len, u16 addr);
 
 /**
-  * @brief  处理功能码为05的指令
+  * @brief  解析应答数据
+  * @param  
+  * @retval 1	解析成功
+  *         0   未找到寄存器
+  *         -1	长度错误
+  *         -2	数据长度错误/寄存器地址错误
+  *         -3	
+  *         -4	设备码错误
+  *         -5	功能码错误
+  *         -6	CRC错误
   */
-static void Modbus_05_Pro(void);
-
-/**
-  * @brief  处理功能码为06的指令
-  */
-static void Modbus_06_Pro(void);
+static int RTU_Parse(u8 *pRxBuf, u16 rxLen, u8 devCode, u8 funCode, u16 addr, u16 data);
 
 /**
   * @brief  发送指令
+  * @param  
+  * @retval 1	解析成功
+  *         0   未找到寄存器
+  *         -1	长度错误
+  *         -2	数据长度错误/寄存器地址错误
+  *         -3	
+  *         -4	设备码错误
+  *         -5	功能码错误
+  *         -6	CRC错误
+  *         -7	未接收到数据
   */
-static void Modbus_SendCmd(ModbusData_t *info);
+static int RTU_SendCmd(u8 devCode, u8 funCode, u16 addr, u16 data);
 
 /**
   * @brief  Modbus-RTU通讯初始化
@@ -114,21 +127,7 @@ void Modbus_Init( void )
 	// 贴标机初始化
 	Uart_SetRxEnable(&huart7);
 
-	Modbus_AddCmd(MODBUS_CMD_MACHINE_RESET);
-}
-
-/**
-  * @brief  Modbus-RTU协议处理
-  * @param  
-  * @retval 
-  */
-void Modbus_Process(void)
-{
-	g_modbusTick = HAL_GetTick();
-	
-	Modbus_TxProcess();     // 发送指令
-	Modbus_RxProcess();     // 接收处理
-	Modbus_TimProcess();    // 定时器处理
+	Modbus_MechanicalReset();
 }
 
 /**
@@ -142,364 +141,323 @@ ModbusInfo_t *Modbus_GetParam(void)
 }
 
 /**
-  * @brief  添加Modbus-RTU指令到指令队列
-  * @param  cmd   Modbus-RTU指令
-  * @retval 
-  */
-void Modbus_AddCmd(ModbusCmdType_t cmd)
-{
-	u8 i = 0;
-	for (i = 0; i < g_modbusInfo.cmdList.num; i++) {
-		if (cmd == g_modbusInfo.cmdList.list[i]) {
-			return ;
-		}
-	}
-	if (g_modbusInfo.cmdList.num < MODBUS_LIST_MAX_NUMBER) {
-		g_modbusInfo.cmdList.list[g_modbusInfo.cmdList.num++] = cmd;
-	}
-}
-
-/**
-  * @brief  发送指令处理
-  * @remark 发送单条指令可以直接在发送时调用即可，但由于指令需要等待应答并重发，
-  *         此时要发送指令就会冲突，因此创建指令列表，在等待应答时，需要发送指令
-  *         就存储到指令列表中，等当前指令获取到应答或超过重发最大次数后，再发送
-  *         指令列表中的指令。指令列表需要在上一条指令流程结束才能发送，因此发送
-  *         处理需要放在main循环中一直查看。
-  */
-static void Modbus_TxProcess(void)
-{
-	if (g_modbusAckTimeout.count == 0) {    // modbus处于空闲
-		// 指令内容处理
-		if (g_modbusInfo.cmdType == MODBUS_CMD_NULL) {
-			if (g_modbusInfo.cmdList.num > 0) {
-				// 读取指令
-				g_modbusInfo.cmdType = g_modbusInfo.cmdList.list[0];
-				g_modbusInfo.cmdList.num--;
-				
-				// 删除指令
-				memcpy(g_modbusInfo.cmdList.list, g_modbusInfo.cmdList.list + 1, g_modbusInfo.cmdList.num);
-				g_modbusInfo.cmdList.list[g_modbusInfo.cmdList.num] = MODBUS_CMD_NULL;
-			}
-		}
-		
-		// 清除上一条指令数据
-		memset(&g_modbusInfo.cmdData, 0, sizeof(ModbusData_t));
-		
-		switch (g_modbusInfo.cmdType) {
-			case MODBUS_CMD_TRIGGER_LABEL:
-			{
-				g_modbusInfo.cmdData.devCode = 0x01;
-				g_modbusInfo.cmdData.funCode = MODBUS_FUN_05;
-				g_modbusInfo.cmdData.addr = MODBUS_ADDR_TRIGGER_LAB;
-				g_modbusInfo.cmdData.data.wrData = 0xFF00;
-				Modbus_SendCmd(&g_modbusInfo.cmdData);
-				
-				g_modbusTrigReset.start = g_modbusTick;
-				g_modbusTrigReset.count = MODBUS_TRIGGERRESET_TIME;   // 5秒后复位
-				break;
-			}
-			case MODBUS_CMD_TRIGGER_RESET:
-			{
-				g_modbusInfo.cmdData.devCode = 0x01;
-				g_modbusInfo.cmdData.funCode = MODBUS_FUN_05;
-				g_modbusInfo.cmdData.addr = MODBUS_ADDR_TRIGGER_LAB;
-				g_modbusInfo.cmdData.data.wrData = 0x0000;
-				Modbus_SendCmd(&g_modbusInfo.cmdData);
-				break;
-			}
-			case MODBUS_CMD_READ_VALIBNUM:
-			{
-				g_modbusInfo.cmdData.devCode = 0x01;
-				g_modbusInfo.cmdData.funCode = MODBUS_FUN_03;
-				g_modbusInfo.cmdData.addr = MODBUS_ADDR_VALIB_LABEL;
-				g_modbusInfo.cmdData.data.readLen = 0x0001;
-				Modbus_SendCmd(&g_modbusInfo.cmdData);
-				break;
-			}
-			case MODBUS_CMD_READ_INVALNUM:
-			{
-				g_modbusInfo.cmdData.devCode = 0x01;
-				g_modbusInfo.cmdData.funCode = MODBUS_FUN_03;
-				g_modbusInfo.cmdData.addr = MODBUS_ADDR_INVAL_LABEL;
-				g_modbusInfo.cmdData.data.readLen = 0x0001;
-				Modbus_SendCmd(&g_modbusInfo.cmdData);
-				break;
-			}
-			case MODBUS_CMD_MACHINE_RESET:
-			{
-				g_modbusInfo.cmdData.devCode = 0x01;
-				g_modbusInfo.cmdData.funCode = MODBUS_FUN_05;
-				g_modbusInfo.cmdData.addr = MODBUS_ADDR_MACHINE_RESET;
-				g_modbusInfo.cmdData.data.wrData = 0xFF00;
-				Modbus_SendCmd(&g_modbusInfo.cmdData);
-				break;
-			}
-			case MODBUS_CMD_CLEAR_RESET:
-			{
-				g_modbusInfo.cmdData.devCode = 0x01;
-				g_modbusInfo.cmdData.funCode = MODBUS_FUN_05;
-				g_modbusInfo.cmdData.addr = MODBUS_ADDR_CLEAR_RESET;
-				g_modbusInfo.cmdData.data.wrData = 0xFF00;
-				Modbus_SendCmd(&g_modbusInfo.cmdData);
-				break;
-			}
-			case MODBUS_CMD_UNLOCK_DEVICE:
-			{
-				g_modbusInfo.cmdData.devCode = 0x01;
-				g_modbusInfo.cmdData.funCode = MODBUS_FUN_05;
-				g_modbusInfo.cmdData.addr = MODBUS_ADDR_LOCK_OPERATE;
-				g_modbusInfo.cmdData.data.wrData = 0xFF00;
-				Modbus_SendCmd(&g_modbusInfo.cmdData);
-				break;
-			}
-			case MODBUS_CMD_GETLOCKSTATUS:
-			{
-				g_modbusInfo.cmdData.devCode = 0x01;
-				g_modbusInfo.cmdData.funCode = MODBUS_FUN_01;
-				g_modbusInfo.cmdData.addr = MODBUS_ADDR_LOCK_STATUS;
-				g_modbusInfo.cmdData.data.readLen = 0x0001;
-				Modbus_SendCmd(&g_modbusInfo.cmdData);
-				break;
-			}
-			default:
-				break;
-		}
-	}
-}
-
-/**
-  * @brief  接收处理
+  * @brief  机械复位
   * @param  
-  * @retval 
+  * @retval 0	复位正常
+  *         -1	复位无应答
   */
-static void Modbus_RxProcess(void)
+int Modbus_MechanicalReset(void)
 {
-	uint16_t calcCRC = 0, recvCRC = 0;
-	g_modbusRxLen = Uart_GetData(&huart7, g_modbusRxBuf);   // 获取RTU串口数据
-	if (g_modbusRxLen > 0) {
-		// 打印数据
-		#if (DBG_TRACE == 1)
-			DBG("recv(PLC): ");
-			PrintHexBuffer(g_modbusRxBuf, g_modbusRxLen);
-		#endif
-		
-		// 1.检验机械码
-		if (g_modbusRxBuf[0] == 0x01) {
-			Error_Del(ERROR_DEVICE_UNCOMMUNICATE);
-
-			// 2.检验功能码
-			if (g_modbusRxBuf[1] == g_modbusInfo.cmdData.funCode) {
-				
-				// 3.校验CRC
-				calcCRC = CalCrc16(g_modbusRxBuf, g_modbusRxLen - 2, 0xFFFF);
-				recvCRC = ((uint16_t)g_modbusRxBuf[g_modbusRxLen - 1] << 8) | g_modbusRxBuf[g_modbusRxLen - 2];
-				/***********判断CRC校验正确*************/
-				if (calcCRC == recvCRC) { //CRC校验正确
-					
-					if (g_modbusInfo.cmdData.funCode == g_modbusRxBuf[1]) {
-						switch (g_modbusRxBuf[1]) {
-							case 1:
-								Modbus_01_Pro();
-								break;
-							case 3:
-								Modbus_03_Pro();
-								break;
-							case 5:
-								Modbus_05_Pro();
-								break;
-							case 6:
-								Modbus_06_Pro();
-								break;
-							default:
-								break;
-						}	
-					}
-				}
-			}
-		}
-		
-		memset(g_modbusRxBuf, 0, UART7_BUFFSIZE);
+	// 机械复位
+	if (RTU_SendCmd(0x01, MODBUS_FUN_05, MODBUS_ADDR_MACHINE_RESET, 0xFF00) != 1) {
+		return -1;
 	}
+	return 0;
 }
 
 /**
-  * @brief  处理定时器
+  * @brief  心跳包
   * @param  
-  * @retval 
+  * @retval 0	心跳正常
+  *         -1	查询锁状态无应答
+  *         -2  查询有效标签数无应答
+  *         -3  查询无效标签数无应答
   */
-static void Modbus_TimProcess(void)
+int Modbus_HeartBeat(void)
 {
-	// 应答超时
-	if ((g_modbusAckTimeout.count > 0) && (g_modbusTick - g_modbusAckTimeout.start >= g_modbusAckTimeout.count)) {
-		g_modbusAckTimeout.start = 0;
-		g_modbusAckTimeout.count = 0;
-				
-		if (g_modbusInfo.reTxNum < MODBUS_MAX_RETRY_NUMBER) {// 重发指令
-			g_modbusInfo.reTxNum++;
-		} else {		// 超过最大重发次数，不再重发
-			g_modbusInfo.reTxNum = 0;
-			g_modbusInfo.cmdType = MODBUS_CMD_NULL;
-		}
+	// 锁状态
+	if (RTU_SendCmd(0x01, MODBUS_FUN_01, MODBUS_ADDR_LOCK_STATUS, 0x0001) != 1) {
+		return -1;
 	}
 	
-	// 清除复位
-	if ((g_modbusClearReset.count > 0) && (g_modbusTick - g_modbusClearReset.start >= g_modbusClearReset.count)) {
-		g_modbusClearReset.start = 0;
-		g_modbusClearReset.count = 0;
+	// 有效标签数
+	if (RTU_SendCmd(0x01, MODBUS_FUN_03, MODBUS_ADDR_VALIB_LABEL, 0x0001) != 1) {
+		return -2;
+	}
 
-		// 发送清除复位指令
-		Modbus_AddCmd(MODBUS_CMD_CLEAR_RESET);
-    }
+	// 无效标签数
+	if (RTU_SendCmd(0x01, MODBUS_FUN_03, MODBUS_ADDR_INVAL_LABEL, 0x0001) != 1) {
+		return -3;
+	}
+	return 0;
+}
+
+/**
+  * @brief  贴标
+  * @param  
+  * @retval 0	动作正常
+  *         -1  贴标无应答
+  *         -2  贴标复位无应答
+  */
+int Modbus_LabelRun(void)
+{
+	// 贴标
+	if (RTU_SendCmd(0x01, MODBUS_FUN_05, MODBUS_ADDR_TRIGGER_LAB, 0xFF00) != 1) {
+		return -1;
+	}
 	
-	// 触发复位
-	if ((g_modbusTrigReset.count > 0) && (g_modbusTick - g_modbusTrigReset.start >= g_modbusTrigReset.count)) {
-		g_modbusTrigReset.start = 0;
-		g_modbusTrigReset.count = 0;
-
-		// 发送触发复位指令
-		Modbus_AddCmd(MODBUS_CMD_TRIGGER_RESET);
+	osDelay(3000);
+	
+	// 贴标复位
+	if (RTU_SendCmd(0x01, MODBUS_FUN_05, MODBUS_ADDR_TRIGGER_LAB, 0x0000) != 1) {
+		return -2;
 	}
-
+	
+	return 0;
 }
 
 /**
-  * @brief  处理功能码为01的指令
+  * @brief  开锁
   * @param  
-  * @retval 
+  * @retval 0	动作正常
+  *         -1  无应答
   */
-static void Modbus_01_Pro(void)
+int Modbus_OpenLock(void)
 {
-	uint8_t i = 0;
-	if (g_modbusRxLen >= 6) {   // 长度正确
-		if (g_modbusRxBuf[2] == 1) {    // 载荷长度正确
-			for (i = 0; i < MODBUS_MAX_REGISTER_NUM; i++) {
-				if (g_modbusInfo.regList[i].addr == g_modbusInfo.cmdData.addr) {
-					g_modbusInfo.regList[i].data = g_modbusRxBuf[3];
-					g_modbusInfo.cmdType = MODBUS_CMD_NULL;
-					g_modbusAckTimeout.start = 0;
-					g_modbusAckTimeout.count = 0;
-					
-					break;
-				}
-			}
+	// 开锁
+	if (RTU_SendCmd(0x01, MODBUS_FUN_05, MODBUS_ADDR_LOCK_OPERATE, 0xFF00) != 1) {
+		return -1;
+	}
+	return 0;
+}
+
+/**
+  * @brief  修改寄存器值
+  * @param  
+  * @retval 1	修改成功
+  *         0   未找到寄存器
+  */
+static int RTU_SetReg(u16 addr, u16 data)
+{
+	int ret = 0;
+	// 把读取到的数据写入寄存器
+	for (int i = 0; i < MODBUS_MAX_REGISTER_NUM; i++) {
+		if (g_modbusInfo.regList[i].addr == addr) {
+			g_modbusInfo.regList[i].data = data;
+			ret = 1;
+			break;
 		}
 	}
+	return ret;
 }
 
 /**
-  * @brief  处理功能码为03的指令
+  * @brief  解析功能码为01的应答数据
   * @param  
-  * @retval 
+  * @retval 1	解析成功
+  *         0   未找到寄存器
+  *         -1	长度错误
+  *         -2	数据长度错误
   */
-static void Modbus_03_Pro(void)
+static int RTU_01_Parse(u8 *pData, u16 len, u16 addr)
 {
-	uint8_t i = 0;
-	if (g_modbusRxLen >= 7) {   // 长度正确
-		if (g_modbusRxBuf[2] == 2) {    // 载荷长度正确
-			for (i = 0; i < MODBUS_MAX_REGISTER_NUM; i++) {
-				if (g_modbusInfo.regList[i].addr == g_modbusInfo.cmdData.addr) {
-					g_modbusInfo.regList[i].data = (g_modbusRxBuf[3] << 8) | g_modbusRxBuf[4];
-					g_modbusInfo.cmdType = MODBUS_CMD_NULL;
-					g_modbusAckTimeout.start = 0;
-					g_modbusAckTimeout.count = 0;
-					break;
-				}
-			}
-		}
+	int i;
+	
+	// 检查长度
+	if (len < 2) {
+		return -1;
 	}
+	
+	// 检查数据长度
+	if (pData[0] != 1) {
+		return -2;
+	}
+	
+	// 把读取到的数据写入寄存器
+	return RTU_SetReg(addr, pData[1]);
 }
 
 /**
-  * @brief  处理功能码为05的指令
+  * @brief  解析功能码为03的应答数据
   * @param  
-  * @retval 
+  * @retval 1	解析成功
+  *         0   未找到寄存器
+  *         -1	长度错误
+  *         -2	数据长度错误
   */
-static void Modbus_05_Pro(void)
+static int RTU_03_Parse(u8 *pData, u16 len, u16 addr)
 {
-	uint8_t i = 0;
+	int i;
+	
+	// 检查长度
+	if (len < 3) {
+		return -1;
+	}
+	
+	// 检查数据长度
+	if (pData[0] != 2) {
+		return -2;
+	}
+	
+	// 把读取到的数据写入寄存器
+	return RTU_SetReg(addr, (pData[1] << 8) | pData[2]);
+}
+
+/**
+  * @brief  解析功能码为05的应答数据
+  * @param  
+  * @retval 1	解析成功
+  *         0   未找到寄存器
+  *         -1	长度错误
+  *         -2	寄存器地址错误
+  */
+static int RTU_05_Parse(u8 *pData, u16 len, u16 addr)
+{
+	int i = 0, ret = 0;
 	uint16_t startAddr = 0, data = 0;
-	if (g_modbusRxLen >= 8) {   // 长度正确
-		startAddr = ((uint16_t)g_modbusRxBuf[2] << 8) | g_modbusRxBuf[3];
-		data = ((uint16_t)g_modbusRxBuf[4] << 8) | g_modbusRxBuf[5];
-		if (startAddr == g_modbusInfo.cmdData.addr) {   // 地址正确
-			for (i = 0; i < MODBUS_MAX_REGISTER_NUM; i++) {
-				if (g_modbusInfo.regList[i].addr == startAddr) {
-					g_modbusInfo.regList[i].data = data;
-					g_modbusInfo.cmdType = MODBUS_CMD_NULL;
-					g_modbusAckTimeout.start = 0;
-					g_modbusAckTimeout.count = 0;
-					
-					if (g_modbusInfo.devJoin == false) {// Modbus通讯正常
-						if (startAddr == MODBUS_ADDR_MACHINE_RESET) {
-							g_modbusInfo.devJoin = true;
-						}
-					}
-					break;
-				}
-			}
-		}
+	
+	// 检查长度
+	if (len < 4) {
+		return -1;
 	}
+	
+	// 检查寄存器地址
+	startAddr = ((uint16_t)pData[0] << 8) | pData[1];
+	if (startAddr != addr) {
+		return -2;
+	}
+	
+	// 检查设备是否连接
+	if (g_modbusInfo.devJoin == false && addr == MODBUS_ADDR_MACHINE_RESET) {
+		g_modbusInfo.devJoin = true;
+	}
+	
+	// 把读取到的数据写入寄存器
+	data = ((uint16_t)pData[2] << 8) | pData[3];
+	return RTU_SetReg(addr, data);
 }
 
 /**
-  * @brief  处理功能码为06的指令
+  * @brief  解析功能码为06的应答数据
   * @param  
-  * @retval 
+  * @retval 1	解析成功
+  *         0   未找到寄存器
+  *         -1	长度错误
+  *         -2	寄存器地址错误
   */
-static void Modbus_06_Pro(void)
+static int RTU_06_Parse(u8 *pData, u16 len, u16 addr)
 {
-	uint8_t i = 0;
+	int i = 0, ret = 0;
 	uint16_t startAddr = 0, data = 0;
-	if (g_modbusRxLen >= 8) {   // 长度正确
-		startAddr = ((uint16_t)g_modbusRxBuf[2] << 8) | g_modbusRxBuf[3];
-		data = ((uint16_t)g_modbusRxBuf[4] << 8) | g_modbusRxBuf[5];
-		if (startAddr == g_modbusInfo.cmdData.addr) {   // 地址正确
-			for (i = 0; i < MODBUS_MAX_REGISTER_NUM; i++) {
-				if (g_modbusInfo.regList[i].addr == startAddr) {
-					g_modbusInfo.regList[i].data = data;
-					g_modbusInfo.cmdType = MODBUS_CMD_NULL;
-					g_modbusAckTimeout.start = 0;
-					g_modbusAckTimeout.count = 0;
-					break;
-				}
-			}
-		}
+	
+	// 检查长度
+	if (len < 4) {
+		return -1;
 	}
+	
+	// 检查寄存器地址
+	startAddr = ((uint16_t)pData[0] << 8) | pData[1];
+	if (startAddr != addr) {
+		return -2;
+	}
+	
+	// 把读取到的数据写入寄存器
+	data = ((uint16_t)pData[2] << 8) | pData[3];
+	return RTU_SetReg(addr, data);
+}
+
+/**
+  * @brief  解析应答数据
+  * @param  
+  * @retval 1	解析成功
+  *         0   未找到寄存器
+  *         -1	长度错误
+  *         -2	数据长度错误/寄存器地址错误
+  *         -3	
+  *         -4	设备码错误
+  *         -5	功能码错误
+  *         -6	CRC错误
+  */
+static int RTU_Parse(u8 *pRxBuf, u16 rxLen, u8 devCode, u8 funCode, u16 addr, u16 data)
+{
+	int ret = 0;
+	u16 calcCrc = 0, recvCrc = 0;
+	
+	// 检查设备码
+	if (pRxBuf[0] != devCode) {
+		return -4;
+	}
+	
+	// 检查功能码
+	if (pRxBuf[1] != funCode) {
+		return -5;
+	}
+	
+	// 检查CRC
+	calcCrc = CalCrc16(pRxBuf, rxLen - 2, 0xFFFF);
+	recvCrc = ((uint16_t)pRxBuf[rxLen - 1] << 8) | pRxBuf[rxLen - 2];
+	if (calcCrc != recvCrc) {
+		return -6;
+	}
+	
+	switch (funCode) {
+		case 1:
+			ret = RTU_01_Parse(pRxBuf + 2, rxLen - 4, addr);
+			break;
+		
+		case 3:
+			ret = RTU_03_Parse(pRxBuf + 2, rxLen - 4, addr);
+			break;
+		
+		case 5:
+			ret = RTU_05_Parse(pRxBuf + 2, rxLen - 4, addr);
+			break;
+		
+		case 6:
+			ret = RTU_06_Parse(pRxBuf + 2, rxLen - 4, addr);
+			break;
+		
+		default:
+			break;
+	}
+	return ret;
 }
 
 /**
   * @brief  发送指令
   * @param  
-  * @retval 
+  * @retval 1	解析成功
+  *         0   未找到寄存器
+  *         -1	长度错误
+  *         -2	数据长度错误/寄存器地址错误
+  *         -3	
+  *         -4	设备码错误
+  *         -5	功能码错误
+  *         -6	CRC错误
+  *         -7	未接收到数据
   */
-static void Modbus_SendCmd(ModbusData_t *info)
+static int RTU_SendCmd(u8 devCode, u8 funCode, u16 addr, u16 data)
 {
-	uint8_t  txBuf[UART7_BUFFSIZE] = { 0 };
-	uint16_t txLen = 0;
+	u8 *pTxBuf = g_RTUTxBuff;
+	u16 txLen = 0, calcCrc = 0;
+	u16 rxLen = 0, timeout = 50;
 
-	txBuf[txLen++] = info->devCode;
-	txBuf[txLen++] = info->funCode;
-	txBuf[txLen++] = info->addr >> 8;
-	txBuf[txLen++] = info->addr;
-	txBuf[txLen++] = info->data.wrData >> 8;
-	txBuf[txLen++] = info->data.wrData;
+	pTxBuf[txLen++] = devCode;
+	pTxBuf[txLen++] = funCode;
+	pTxBuf[txLen++] = addr >> 8;
+	pTxBuf[txLen++] = addr;
+	pTxBuf[txLen++] = data >> 8;
+	pTxBuf[txLen++] = data;
 	
-	info->crc = CalCrc16(txBuf, 6, 0xFFFF);
-	txBuf[txLen++] = (info->crc & 0x00FF) >> 0;
-	txBuf[txLen++] = (info->crc & 0xFF00) >> 8;
-
-	Uart7_Send(txBuf, txLen);
+	calcCrc = CalCrc16(pTxBuf, 6, 0xFFFF);
+	pTxBuf[txLen++] = (calcCrc & 0x00FF) >> 0;
+	pTxBuf[txLen++] = (calcCrc & 0xFF00) >> 8;
 	
-	//打印接收数据
-#if (DBG_TRACE == 1)
-	DBG("send(PLC): ");
-	PrintHexBuffer(txBuf, txLen);
-#endif
-
-	// 设置超时计数
-	g_modbusAckTimeout.start = g_modbusTick;
-	g_modbusAckTimeout.count = MODBUS_ACK_TIMEOUT_TIME;
+	// 清空接收数据
+	Uart_GetData(&huart7, g_RTURxBuff);
+	
+	// 发送指令
+	Uart7_Send(pTxBuf, txLen);
+	
+	// 等待接收数据
+	while (timeout--) {
+		rxLen = Uart_GetData(&huart7, g_RTURxBuff);
+		if (rxLen > 0) {
+			return RTU_Parse(g_RTURxBuff, rxLen, devCode, funCode, addr, data);
+		}
+		osDelay(1);
+	}
+	return -7;
 }
 
 

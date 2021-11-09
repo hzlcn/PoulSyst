@@ -1,0 +1,59 @@
+poulsyst\bsp_main.o: ..\User\System\bsp_main.c
+poulsyst\bsp_main.o: ..\User\System\bsp_main.h
+poulsyst\bsp_main.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+poulsyst\bsp_main.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+poulsyst\bsp_main.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+poulsyst\bsp_main.o: ../Core/Inc/main.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
+poulsyst\bsp_main.o: ../Core/Inc/stm32f4xx_hal_conf.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h
+poulsyst\bsp_main.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
+poulsyst\bsp_main.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f429xx.h
+poulsyst\bsp_main.o: ../Drivers/CMSIS/Include/core_cm4.h
+poulsyst\bsp_main.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+poulsyst\bsp_main.o: ../Drivers/CMSIS/Include/cmsis_version.h
+poulsyst\bsp_main.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+poulsyst\bsp_main.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+poulsyst\bsp_main.o: ../Drivers/CMSIS/Include/mpu_armv7.h
+poulsyst\bsp_main.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
+poulsyst\bsp_main.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio_ex.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_exti.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma_ex.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_cortex.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc_ex.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
+poulsyst\bsp_main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+poulsyst\bsp_main.o: ../Core/Inc/gpio.h
+poulsyst\bsp_main.o: ../Core/Inc/rtc.h
+poulsyst\bsp_main.o: ../Core/Inc/usart.h
+poulsyst\bsp_main.o: ../Core/Inc/tim.h
+poulsyst\bsp_main.o: ../Core/Inc/spi.h
+poulsyst\bsp_main.o: ..\User\System\delay.h
+poulsyst\bsp_main.o: ..\User\System\serial.h
+poulsyst\bsp_main.o: ..\User\System\timer.h
+poulsyst\bsp_main.o: ..\User\app\a_debug.h
+poulsyst\bsp_main.o: ..\User\app\a_config.h
+poulsyst\bsp_main.o: ..\User\app\a_tcp.h
+poulsyst\bsp_main.o: ..\User\System\Types.h
+poulsyst\bsp_main.o: ..\User\app\a_w5500.h
+poulsyst\bsp_main.o: ..\User\app\a_lcd.h
+poulsyst\bsp_main.o: ..\User\Periph\lcd.h
+poulsyst\bsp_main.o: ..\User\app\a_main_p.h
+poulsyst\bsp_main.o: ..\User\Periph\rc522.h
+poulsyst\bsp_main.o: ..\User\app\a_plc_p.h
+poulsyst\bsp_main.o: ..\User\Periph\w25qxx.h

@@ -1,0 +1,76 @@
+poulsyst\lcd_ex.o: ..\User\displayer\lcd_ex.c
+poulsyst\lcd_ex.o: ..\User\displayer\lcd_ex.h
+poulsyst\lcd_ex.o: ..\User\app\apps.h
+poulsyst\lcd_ex.o: ..\User\common.h
+poulsyst\lcd_ex.o: ../Core/Inc/main.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
+poulsyst\lcd_ex.o: ../Core/Inc/stm32f4xx_hal_conf.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h
+poulsyst\lcd_ex.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
+poulsyst\lcd_ex.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f429xx.h
+poulsyst\lcd_ex.o: ../Drivers/CMSIS/Include/core_cm4.h
+poulsyst\lcd_ex.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+poulsyst\lcd_ex.o: ../Drivers/CMSIS/Include/cmsis_version.h
+poulsyst\lcd_ex.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+poulsyst\lcd_ex.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+poulsyst\lcd_ex.o: ../Drivers/CMSIS/Include/mpu_armv7.h
+poulsyst\lcd_ex.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
+poulsyst\lcd_ex.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio_ex.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_exti.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma_ex.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_cortex.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc_ex.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
+poulsyst\lcd_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+poulsyst\lcd_ex.o: ../Core/Inc/rtc.h
+poulsyst\lcd_ex.o: ../Core/Inc/spi.h
+poulsyst\lcd_ex.o: ../Core/Inc/tim.h
+poulsyst\lcd_ex.o: ../Core/Inc/gpio.h
+poulsyst\lcd_ex.o: ../Core/Inc/usart.h
+poulsyst\lcd_ex.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+poulsyst\lcd_ex.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+poulsyst\lcd_ex.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+poulsyst\lcd_ex.o: ..\User\debug\debug.h
+poulsyst\lcd_ex.o: ..\User\network\network.h
+poulsyst\lcd_ex.o: ..\User\network\w5500\Types.h
+poulsyst\lcd_ex.o: ..\User\slave_device\modbus.h
+poulsyst\lcd_ex.o: ..\User\network\communicate.h
+poulsyst\lcd_ex.o: ..\User\displayer\display.h
+poulsyst\lcd_ex.o: ..\User\network\w5500\ethernet.h
+poulsyst\lcd_ex.o: ..\User\gps\gps.h
+poulsyst\lcd_ex.o: ..\User\record\record.h
+poulsyst\lcd_ex.o: ..\User\base\base.h
+poulsyst\lcd_ex.o: ..\User\base\poulbase.h
+poulsyst\lcd_ex.o: ..\User\base\userbase.h
+poulsyst\lcd_ex.o: ..\User\base\textbase.h
+poulsyst\lcd_ex.o: ..\User\driver\util.h
+poulsyst\lcd_ex.o: ..\User\driver\drivers.h
+poulsyst\lcd_ex.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+poulsyst\lcd_ex.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+poulsyst\lcd_ex.o: ../Core/Inc/FreeRTOSConfig.h
+poulsyst\lcd_ex.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
+poulsyst\lcd_ex.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
+poulsyst\lcd_ex.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
+poulsyst\lcd_ex.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
+poulsyst\lcd_ex.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
+poulsyst\lcd_ex.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
+poulsyst\lcd_ex.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
+poulsyst\lcd_ex.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h
+poulsyst\lcd_ex.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h
+poulsyst\lcd_ex.o: ..\User\driver\rtctime.h
+poulsyst\lcd_ex.o: ..\User\driver\serial.h

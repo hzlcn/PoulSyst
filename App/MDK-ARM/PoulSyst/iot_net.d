@@ -1,0 +1,61 @@
+poulsyst\iot_net.o: ..\User\bus\iot_net.c
+poulsyst\iot_net.o: ..\User\driver\crc.h
+poulsyst\iot_net.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+poulsyst\iot_net.o: ..\User\driver\tim_timer.h
+poulsyst\iot_net.o: ..\User\bus\config.h
+poulsyst\iot_net.o: ../Core/Inc/main.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
+poulsyst\iot_net.o: ../Core/Inc/stm32f4xx_hal_conf.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h
+poulsyst\iot_net.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
+poulsyst\iot_net.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f429xx.h
+poulsyst\iot_net.o: ../Drivers/CMSIS/Include/core_cm4.h
+poulsyst\iot_net.o: ../Drivers/CMSIS/Include/cmsis_version.h
+poulsyst\iot_net.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+poulsyst\iot_net.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+poulsyst\iot_net.o: ../Drivers/CMSIS/Include/mpu_armv7.h
+poulsyst\iot_net.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
+poulsyst\iot_net.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio_ex.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_exti.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma_ex.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_cortex.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc_ex.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
+poulsyst\iot_net.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+poulsyst\iot_net.o: ../Core/Inc/rtc.h
+poulsyst\iot_net.o: ../Core/Inc/spi.h
+poulsyst\iot_net.o: ../Core/Inc/tim.h
+poulsyst\iot_net.o: ../Core/Inc/gpio.h
+poulsyst\iot_net.o: ../Core/Inc/usart.h
+poulsyst\iot_net.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+poulsyst\iot_net.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+poulsyst\iot_net.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+poulsyst\iot_net.o: ..\User\bus\a_main.h
+poulsyst\iot_net.o: ..\User\bus\uart_debug.h
+poulsyst\iot_net.o: ..\User\bus\network.h
+poulsyst\iot_net.o: ..\User\driver\Types.h
+poulsyst\iot_net.o: ..\User\middle\modbus.h
+poulsyst\iot_net.o: ..\User\bus\iot_net.h
+poulsyst\iot_net.o: ..\User\middle\display.h
+poulsyst\iot_net.o: ..\User\driver\lcd.h
+poulsyst\iot_net.o: ..\User\bus\a_main.h
+poulsyst\iot_net.o: ..\User\middle\ethernet.h
+poulsyst\iot_net.o: ..\User\middle\gps.h
+poulsyst\iot_net.o: ..\User\middle\record.h
+poulsyst\iot_net.o: ..\User\middle\base.h
+poulsyst\iot_net.o: ..\User\driver\util.h

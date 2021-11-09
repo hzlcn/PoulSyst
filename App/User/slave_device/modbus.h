@@ -116,10 +116,6 @@ typedef struct {
   * Modbus指令信息结构体
   */
 typedef struct {
-	ModbusList_t    cmdList;	// 指令列表
-	ModbusData_t    cmdData;	// 指令数据
-	ModbusCmdType_t cmdType;	// 指令内容
-	uint8_t         reTxNum;	// 重发次数
 	bool            devJoin;	// 连接状态
 	ModbusReg_t     regList[MODBUS_MAX_REGISTER_NUM];
 }ModbusInfo_t;
@@ -132,18 +128,28 @@ typedef struct {
 void        Modbus_Init(void);
 
 /**
-  * @brief  Modbus-RTU协议处理
-  */
-void        Modbus_Process(void);
-
-/**
   * @brief  获取Modbus指令信息地址指针
   */
 ModbusInfo_t *Modbus_GetParam(void);
 
 /**
-  * @brief  添加Modbus-RTU指令到指令队列
+  * @brief  机械复位
   */
-void        Modbus_AddCmd(ModbusCmdType_t cmd);
+int Modbus_MechanicalReset(void);
+
+/**
+  * @brief  心跳包
+  */
+int Modbus_HeartBeat(void);
+
+/**
+  * @brief  贴标
+  */
+int Modbus_LabelRun(void);
+
+/**
+  * @brief  开锁
+  */
+int Modbus_OpenLock(void);
 
 #endif // __MODBUS_H__

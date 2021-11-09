@@ -119,7 +119,7 @@ void Route_Process(void)
 					Display_SetShow(DISPLAY_SHOW_WORKPAGE);
 
 				} else if (button == LCD_ADDR_B_06_03_UNLOCK) {
-					Modbus_AddCmd(MODBUS_CMD_UNLOCK_DEVICE);
+					Modbus_OpenLock();
 					CMNC_AddCmd(UL_FUNC_9);
 					
 				} else if (button == LCD_ADDR_B_06_04_SPECIES) {
@@ -237,7 +237,7 @@ void Route_Process(void)
 					Beep_Run(50);
 
 					// 2.控制贴标机贴标签
-					Modbus_AddCmd(MODBUS_CMD_TRIGGER_LABEL);
+					Modbus_LabelRun();
 
 					// 3.保存交易信息
 					if (merchant->perm != USER_PERM_MAINTAIN)  {
@@ -295,11 +295,8 @@ void Route_Process(void)
 		// 处理网络图标
 		Disp_SetNetIcon();
 		
-		// 获取门锁状态 + 标签数
-		Modbus_AddCmd(MODBUS_CMD_GETLOCKSTATUS);
-		Modbus_AddCmd(MODBUS_CMD_READ_VALIBNUM);
-		Modbus_AddCmd(MODBUS_CMD_READ_INVALNUM);
-
+		// Modbus发送心跳包(获取门锁状态 + 标签数)
+		Modbus_HeartBeat();
 	}
 	
 	// 5s处理

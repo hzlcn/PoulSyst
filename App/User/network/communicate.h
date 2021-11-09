@@ -64,4 +64,12 @@ void CMNC_08_Solve(u8 *pBuf, u16 len);
 void CMNC_09_Solve(u8 *pBuf, u16 len);
 void CMNC_0A_Solve(u8 *pBuf, u16 len);
 
+/**
+  * @brief  设备登录服务器
+  * @param  timeout	登录超时时间
+  * @retval 
+  */
+int Proto_Join(u32 timeout);
+
+
 #endif /*__COMMUNICATE_H__ */

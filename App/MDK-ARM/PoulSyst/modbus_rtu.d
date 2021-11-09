@@ -1,0 +1,76 @@
+poulsyst\modbus_rtu.o: ..\User\slave_device\modbus_rtu.c
+poulsyst\modbus_rtu.o: ..\User\slave_device\modbus.h
+poulsyst\modbus_rtu.o: ..\User\common.h
+poulsyst\modbus_rtu.o: ../Core/Inc/main.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
+poulsyst\modbus_rtu.o: ../Core/Inc/stm32f4xx_hal_conf.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h
+poulsyst\modbus_rtu.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
+poulsyst\modbus_rtu.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f429xx.h
+poulsyst\modbus_rtu.o: ../Drivers/CMSIS/Include/core_cm4.h
+poulsyst\modbus_rtu.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+poulsyst\modbus_rtu.o: ../Drivers/CMSIS/Include/cmsis_version.h
+poulsyst\modbus_rtu.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+poulsyst\modbus_rtu.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+poulsyst\modbus_rtu.o: ../Drivers/CMSIS/Include/mpu_armv7.h
+poulsyst\modbus_rtu.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
+poulsyst\modbus_rtu.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio_ex.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_exti.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma_ex.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_cortex.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc_ex.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
+poulsyst\modbus_rtu.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+poulsyst\modbus_rtu.o: ../Core/Inc/rtc.h
+poulsyst\modbus_rtu.o: ../Core/Inc/spi.h
+poulsyst\modbus_rtu.o: ../Core/Inc/tim.h
+poulsyst\modbus_rtu.o: ../Core/Inc/gpio.h
+poulsyst\modbus_rtu.o: ../Core/Inc/usart.h
+poulsyst\modbus_rtu.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+poulsyst\modbus_rtu.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+poulsyst\modbus_rtu.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+poulsyst\modbus_rtu.o: ..\User\driver\serial.h
+poulsyst\modbus_rtu.o: ..\User\driver\crc.h
+poulsyst\modbus_rtu.o: ..\User\app\apps.h
+poulsyst\modbus_rtu.o: ..\User\middle\debug.h
+poulsyst\modbus_rtu.o: ..\User\network\network.h
+poulsyst\modbus_rtu.o: ..\User\network\Types.h
+poulsyst\modbus_rtu.o: ..\User\network\communicate.h
+poulsyst\modbus_rtu.o: ..\User\displayer\display.h
+poulsyst\modbus_rtu.o: ..\User\displayer\lcd.h
+poulsyst\modbus_rtu.o: ..\User\datastruct.h
+poulsyst\modbus_rtu.o: ..\User\network\w5500_ex.h
+poulsyst\modbus_rtu.o: ..\User\middle\gps.h
+poulsyst\modbus_rtu.o: ..\User\middle\store.h
+poulsyst\modbus_rtu.o: ..\User\middle\poultry.h
+poulsyst\modbus_rtu.o: ..\User\middle\usermsg.h
+poulsyst\modbus_rtu.o: ..\User\driver\drivers.h
+poulsyst\modbus_rtu.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+poulsyst\modbus_rtu.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+poulsyst\modbus_rtu.o: ../Core/Inc/FreeRTOSConfig.h
+poulsyst\modbus_rtu.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
+poulsyst\modbus_rtu.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
+poulsyst\modbus_rtu.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
+poulsyst\modbus_rtu.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
+poulsyst\modbus_rtu.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
+poulsyst\modbus_rtu.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
+poulsyst\modbus_rtu.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
+poulsyst\modbus_rtu.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h
+poulsyst\modbus_rtu.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h
+poulsyst\modbus_rtu.o: ..\User\driver\rtctime.h
+poulsyst\modbus_rtu.o: ..\User\middle\param.h

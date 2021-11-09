@@ -1,0 +1,75 @@
+poulsyst\record.o: ..\User\middle\record.c
+poulsyst\record.o: ..\User\driver\w25qxx.h
+poulsyst\record.o: ..\User\app\apps.h
+poulsyst\record.o: ..\User\common.h
+poulsyst\record.o: ../Core/Inc/main.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
+poulsyst\record.o: ../Core/Inc/stm32f4xx_hal_conf.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h
+poulsyst\record.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
+poulsyst\record.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f429xx.h
+poulsyst\record.o: ../Drivers/CMSIS/Include/core_cm4.h
+poulsyst\record.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+poulsyst\record.o: ../Drivers/CMSIS/Include/cmsis_version.h
+poulsyst\record.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+poulsyst\record.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+poulsyst\record.o: ../Drivers/CMSIS/Include/mpu_armv7.h
+poulsyst\record.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
+poulsyst\record.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio_ex.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_exti.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma_ex.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_cortex.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc_ex.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
+poulsyst\record.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+poulsyst\record.o: ../Core/Inc/rtc.h
+poulsyst\record.o: ../Core/Inc/spi.h
+poulsyst\record.o: ../Core/Inc/tim.h
+poulsyst\record.o: ../Core/Inc/gpio.h
+poulsyst\record.o: ../Core/Inc/usart.h
+poulsyst\record.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+poulsyst\record.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+poulsyst\record.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+poulsyst\record.o: ..\User\middle\debug.h
+poulsyst\record.o: ..\User\network\network.h
+poulsyst\record.o: ..\User\network\w5500\Types.h
+poulsyst\record.o: ..\User\slave_device\modbus.h
+poulsyst\record.o: ..\User\network\communicate.h
+poulsyst\record.o: ..\User\displayer\display.h
+poulsyst\record.o: ..\User\displayer\lcd.h
+poulsyst\record.o: ..\User\network\w5500\ethernet.h
+poulsyst\record.o: ..\User\middle\gps.h
+poulsyst\record.o: ..\User\middle\record.h
+poulsyst\record.o: ..\User\middle\poultry.h
+poulsyst\record.o: ..\User\middle\usermsg.h
+poulsyst\record.o: ..\User\driver\serial.h
+poulsyst\record.o: ..\User\middle\param.h
+poulsyst\record.o: ..\User\driver\drivers.h
+poulsyst\record.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+poulsyst\record.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+poulsyst\record.o: ../Core/Inc/FreeRTOSConfig.h
+poulsyst\record.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
+poulsyst\record.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
+poulsyst\record.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
+poulsyst\record.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
+poulsyst\record.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
+poulsyst\record.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
+poulsyst\record.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
+poulsyst\record.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h
+poulsyst\record.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h
+poulsyst\record.o: ..\User\driver\rtctime.h

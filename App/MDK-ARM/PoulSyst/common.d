@@ -1,0 +1,61 @@
+poulsyst\common.o: ..\User\bus\common.c
+poulsyst\common.o: ..\User\common.h
+poulsyst\common.o: ../Core/Inc/main.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
+poulsyst\common.o: ../Core/Inc/stm32f4xx_hal_conf.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h
+poulsyst\common.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
+poulsyst\common.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f429xx.h
+poulsyst\common.o: ../Drivers/CMSIS/Include/core_cm4.h
+poulsyst\common.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+poulsyst\common.o: ../Drivers/CMSIS/Include/cmsis_version.h
+poulsyst\common.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+poulsyst\common.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+poulsyst\common.o: ../Drivers/CMSIS/Include/mpu_armv7.h
+poulsyst\common.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
+poulsyst\common.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio_ex.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_exti.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma_ex.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_cortex.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc_ex.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
+poulsyst\common.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+poulsyst\common.o: ../Core/Inc/rtc.h
+poulsyst\common.o: ../Core/Inc/spi.h
+poulsyst\common.o: ../Core/Inc/tim.h
+poulsyst\common.o: ../Core/Inc/gpio.h
+poulsyst\common.o: ../Core/Inc/usart.h
+poulsyst\common.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+poulsyst\common.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+poulsyst\common.o: D:\Program Files (x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+poulsyst\common.o: ..\User\driver\stmflash.h
+poulsyst\common.o: ..\User\record\w25qxx.h
+poulsyst\common.o: ..\User\bus\buses.h
+poulsyst\common.o: ..\User\bus\debug.h
+poulsyst\common.o: ..\User\network\network.h
+poulsyst\common.o: ..\User\network\w5500\Types.h
+poulsyst\common.o: ..\User\slave_device\modbus.h
+poulsyst\common.o: ..\User\network\communicate.h
+poulsyst\common.o: ..\User\displayer\display.h
+poulsyst\common.o: ..\User\displayer\lcd.h
+poulsyst\common.o: ..\User\bus\buses.h
+poulsyst\common.o: ..\User\network\w5500\ethernet.h
+poulsyst\common.o: ..\User\gps\gps.h
+poulsyst\common.o: ..\User\record\record.h
+poulsyst\common.o: ..\User\base\base.h
+poulsyst\common.o: ..\User\driver\util.h
